@@ -239,6 +239,74 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Outros"",
+            ""id"": ""29fb759d-7646-4ad6-941c-ca5136fd8e73"",
+            ""actions"": [
+                {
+                    ""name"": ""Inventario"",
+                    ""type"": ""Button"",
+                    ""id"": ""3fd91594-3653-4419-badc-7949acbdd502"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Posicao Mouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""3d57327d-bdeb-4ef3-ae0e-4d65371f2997"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interagir"",
+                    ""type"": ""Value"",
+                    ""id"": ""d8be93d1-4b2d-404c-970d-1fc18b7d93f8"",
+                    ""expectedControlType"": ""Integer"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""6c52334f-7cf0-4425-afe7-7adbac65d4ba"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventario"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81ec752d-cf1e-47b3-8c4f-cd9a70038f23"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interagir"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""93282da2-6987-4071-980a-a04a31454b0a"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Posicao Mouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -250,12 +318,18 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
         // Combate
         m_Combate = asset.FindActionMap("Combate", throwIfNotFound: true);
         m_Combate_Ataque = m_Combate.FindAction("Ataque", throwIfNotFound: true);
+        // Outros
+        m_Outros = asset.FindActionMap("Outros", throwIfNotFound: true);
+        m_Outros_Inventario = m_Outros.FindAction("Inventario", throwIfNotFound: true);
+        m_Outros_PosicaoMouse = m_Outros.FindAction("Posicao Mouse", throwIfNotFound: true);
+        m_Outros_Interagir = m_Outros.FindAction("Interagir", throwIfNotFound: true);
     }
 
     ~@InputJogador()
     {
         UnityEngine.Debug.Assert(!m_Movimento.enabled, "This will cause a leak and performance issues, InputJogador.Movimento.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combate.enabled, "This will cause a leak and performance issues, InputJogador.Combate.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Outros.enabled, "This will cause a leak and performance issues, InputJogador.Outros.Disable() has not been called.");
     }
 
     /// <summary>
@@ -530,6 +604,124 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CombateActions" /> instance referencing this action map.
     /// </summary>
     public CombateActions @Combate => new CombateActions(this);
+
+    // Outros
+    private readonly InputActionMap m_Outros;
+    private List<IOutrosActions> m_OutrosActionsCallbackInterfaces = new List<IOutrosActions>();
+    private readonly InputAction m_Outros_Inventario;
+    private readonly InputAction m_Outros_PosicaoMouse;
+    private readonly InputAction m_Outros_Interagir;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Outros".
+    /// </summary>
+    public struct OutrosActions
+    {
+        private @InputJogador m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public OutrosActions(@InputJogador wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Outros/Inventario".
+        /// </summary>
+        public InputAction @Inventario => m_Wrapper.m_Outros_Inventario;
+        /// <summary>
+        /// Provides access to the underlying input action "Outros/PosicaoMouse".
+        /// </summary>
+        public InputAction @PosicaoMouse => m_Wrapper.m_Outros_PosicaoMouse;
+        /// <summary>
+        /// Provides access to the underlying input action "Outros/Interagir".
+        /// </summary>
+        public InputAction @Interagir => m_Wrapper.m_Outros_Interagir;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Outros; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="OutrosActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(OutrosActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="OutrosActions" />
+        public void AddCallbacks(IOutrosActions instance)
+        {
+            if (instance == null || m_Wrapper.m_OutrosActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_OutrosActionsCallbackInterfaces.Add(instance);
+            @Inventario.started += instance.OnInventario;
+            @Inventario.performed += instance.OnInventario;
+            @Inventario.canceled += instance.OnInventario;
+            @PosicaoMouse.started += instance.OnPosicaoMouse;
+            @PosicaoMouse.performed += instance.OnPosicaoMouse;
+            @PosicaoMouse.canceled += instance.OnPosicaoMouse;
+            @Interagir.started += instance.OnInteragir;
+            @Interagir.performed += instance.OnInteragir;
+            @Interagir.canceled += instance.OnInteragir;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="OutrosActions" />
+        private void UnregisterCallbacks(IOutrosActions instance)
+        {
+            @Inventario.started -= instance.OnInventario;
+            @Inventario.performed -= instance.OnInventario;
+            @Inventario.canceled -= instance.OnInventario;
+            @PosicaoMouse.started -= instance.OnPosicaoMouse;
+            @PosicaoMouse.performed -= instance.OnPosicaoMouse;
+            @PosicaoMouse.canceled -= instance.OnPosicaoMouse;
+            @Interagir.started -= instance.OnInteragir;
+            @Interagir.performed -= instance.OnInteragir;
+            @Interagir.canceled -= instance.OnInteragir;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="OutrosActions.UnregisterCallbacks(IOutrosActions)" />.
+        /// </summary>
+        /// <seealso cref="OutrosActions.UnregisterCallbacks(IOutrosActions)" />
+        public void RemoveCallbacks(IOutrosActions instance)
+        {
+            if (m_Wrapper.m_OutrosActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="OutrosActions.AddCallbacks(IOutrosActions)" />
+        /// <seealso cref="OutrosActions.RemoveCallbacks(IOutrosActions)" />
+        /// <seealso cref="OutrosActions.UnregisterCallbacks(IOutrosActions)" />
+        public void SetCallbacks(IOutrosActions instance)
+        {
+            foreach (var item in m_Wrapper.m_OutrosActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_OutrosActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="OutrosActions" /> instance referencing this action map.
+    /// </summary>
+    public OutrosActions @Outros => new OutrosActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movimento" which allows adding and removing callbacks.
     /// </summary>
@@ -566,5 +758,34 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAtaque(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Outros" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="OutrosActions.AddCallbacks(IOutrosActions)" />
+    /// <seealso cref="OutrosActions.RemoveCallbacks(IOutrosActions)" />
+    public interface IOutrosActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Inventario" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInventario(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Posicao Mouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPosicaoMouse(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interagir" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteragir(InputAction.CallbackContext context);
     }
 }

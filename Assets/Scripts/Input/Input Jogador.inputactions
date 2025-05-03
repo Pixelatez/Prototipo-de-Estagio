@@ -153,6 +153,74 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Outros",
+            "id": "29fb759d-7646-4ad6-941c-ca5136fd8e73",
+            "actions": [
+                {
+                    "name": "Inventario",
+                    "type": "Button",
+                    "id": "3fd91594-3653-4419-badc-7949acbdd502",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Posicao Mouse",
+                    "type": "Value",
+                    "id": "3d57327d-bdeb-4ef3-ae0e-4d65371f2997",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Interagir",
+                    "type": "Value",
+                    "id": "d8be93d1-4b2d-404c-970d-1fc18b7d93f8",
+                    "expectedControlType": "Integer",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6c52334f-7cf0-4425-afe7-7adbac65d4ba",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Inventario",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "81ec752d-cf1e-47b3-8c4f-cd9a70038f23",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interagir",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "93282da2-6987-4071-980a-a04a31454b0a",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Posicao Mouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
