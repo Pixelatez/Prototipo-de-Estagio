@@ -6350,26 +6350,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 1516530887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7463454ccf313374f8d832e11929650a, type: 3}
+  m_Script: {fileID: 11500000, guid: 9c0a5b3097a41334aa963131370b7bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vidaAtual: 100
-  vidaMaxima: 100
-  velocidade: 8
+  armaEquipada: {fileID: 0}
   gravidade: 3
   tamanhoPulo: 15
   distanciaChao: 0.15
+  coyoteTime: 0.1
   maskChao:
     serializedVersion: 2
     m_Bits: 64
+  expAtual: 0
+  nivelAtual: 1
+  pontosPorNivel: 4
+  forcaBase: 5
+  destrezaBase: 5
+  inteligenciaBase: 5
+  vitalidadeBase: 5
+  resistenciaBase: 5
+  agilidadeBase: 5
+  danoMeleeBase: 1
+  danoRangedBase: 1
+  danoMagicoBase: 1
+  vidaMaximaBase: 20
+  defesaBase: 2
+  velocidadeBase: 2
   UIDeInventario: {fileID: 1956166815}
   UIDeDerrota: {fileID: 1717655023}
   modoDebug: 0
-  dano: 5
-  cooldownDeAtaque: 1
-  posicaoHitbox: {x: 1, y: 0, z: 0}
-  alturaHitbox: 1.5
-  larguraHitbox: 1.5
 --- !u!1 &1522492607
 GameObject:
   m_ObjectHideFlags: 0

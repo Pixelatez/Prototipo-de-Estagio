@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{D22EF1F6-7635-85D3-594B-6940BECA6059}</ProjectGuid>
+    <ProjectGuid>{A2DAFEEB-7978-C5F4-C7A2-3C4A376AF39B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\UI\UI Inimigo.cs" />
     <Compile Include="Assets\Scripts\Main Manager Behavior.cs" />
     <Compile Include="Assets\Scripts\Area Vitoria.cs" />
+    <Compile Include="Assets\Scripts\Item Base.cs" />
     <Compile Include="Assets\Scripts\Camera Behavior.cs" />
     <Compile Include="Assets\Scripts\Inimigo Terrestre Melee.cs" />
     <Compile Include="Assets\Scripts\UI\GUI Gameplay.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="Assets\Scripts\UI\UI Derrota.cs" />
     <Compile Include="Assets\Scripts\Inimigo Base.cs" />
     <Compile Include="Assets\Scripts\UI\UI Objetivo.cs" />
-    <Compile Include="Assets\Scripts\Personagem Jogavel Melee.cs" />
+    <Compile Include="Assets\Scripts\Item Arma.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
     <Compile Include="Assets\Scripts\Personagem Jogavel.cs" />
   </ItemGroup>
