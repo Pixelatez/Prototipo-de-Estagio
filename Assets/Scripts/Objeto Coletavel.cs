@@ -16,7 +16,7 @@ public class ObjetoColetavel : MonoBehaviour
             PersonagemJogavel jogador = colisor.GetComponent<PersonagemJogavel>();
             if (jogador.Inventario.SlotVazio != -1)
             {
-                GameObject itemInventario = Instantiate(itemDeCuraInventario.gameObject, jogador.Inventario.transform.GetChild(0).GetChild(0).GetChild(jogador.Inventario.SlotVazio));
+                GameObject itemInventario = Instantiate(itemDeCuraInventario.gameObject, jogador.Inventario.SlotsDeInventario.GetChild(jogador.Inventario.SlotVazio));
                 ItemColetado scriptItem = itemInventario.GetComponent<ItemColetado>();
                 scriptItem.Inventario = jogador.Inventario;
                 scriptItem.CuraAoUso = curaAoUso;

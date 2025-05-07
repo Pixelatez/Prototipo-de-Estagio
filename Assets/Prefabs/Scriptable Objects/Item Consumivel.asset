@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4b10f80b66e63449ec5bd3f39c5f72, type: 3}
+  m_Name: Item Consumivel
+  m_EditorClassIdentifier: 
+  itemStackavel: 0
+  tipoDeConsumivel: 0
+  texturaItem: {fileID: 2800000, guid: c52a6bbfe05f0414eb30e0789efc7a93, type: 3}
+  curaAoUso: 0
+  duracaoBuff: 0

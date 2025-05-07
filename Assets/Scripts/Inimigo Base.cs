@@ -5,6 +5,15 @@ public class InimigoBase : MonoBehaviour, IDamageable
 {
     public float VidaAtual { get { return vidaAtual; } }
     public float VidaMaxima { get { return vidaMaxima; } }
+    public float EXPDrop
+    {
+        get 
+        {
+            float aleatorio = Random.Range(ExpAoMorrer.x, ExpAoMorrer.y);
+            aleatorio -= aleatorio % 0.01f;
+            return aleatorio;
+        }
+    }
 
     [Header("Valores de Vida")]
 
@@ -20,6 +29,11 @@ public class InimigoBase : MonoBehaviour, IDamageable
     [SerializeField]
     protected float gravidade = 3f;
 
+    [Header("Valores de EXP")]
+
+    [SerializeField, Tooltip("Valor de EXP entre X e Y que o inimigo dropa ao morrer.")]
+    private Vector2 ExpAoMorrer = new(1, 3);
+   
     [Header("Outros")]
 
     [SerializeField]

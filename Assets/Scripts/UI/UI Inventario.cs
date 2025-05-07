@@ -1,5 +1,3 @@
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIInventario : MonoBehaviour
@@ -10,9 +8,9 @@ public class UIInventario : MonoBehaviour
     {
         get
         {
-            for (int i = 0; i < slotsDeInventario.Length; i++)
+            for (int i = 0; i < numSlotsNoInventario.Length; i++)
             {
-                if (slotsDeInventario[i].transform.childCount == 0)
+                if (numSlotsNoInventario[i].transform.childCount == 0)
                 {
                     return i;
                 }
@@ -22,19 +20,26 @@ public class UIInventario : MonoBehaviour
         }
     }
 
+    public Transform SlotsDeInventario { get { return slotsDeInventario; } }
+
+    [Header("Referências")]
+
+    [SerializeField]
+    private Transform slotsDeInventario;
+
     private PersonagemJogavel jogador;
     private InputJogador input;
-    private SlotInventario[] slotsDeInventario;
+    private SlotInventario[] numSlotsNoInventario;
 
     #region Inicio e Input
 
     private void Awake()
     {
-        slotsDeInventario = new SlotInventario[transform.GetChild(0).GetChild(0).childCount];
+        numSlotsNoInventario = new SlotInventario[slotsDeInventario.childCount];
 
-        for (int i = 0; i < transform.GetChild(0).GetChild(0).childCount; i++)
+        for (int i = 0; i < slotsDeInventario.childCount; i++)
         {
-            slotsDeInventario[i] = transform.GetChild(0).GetChild(0).GetChild(i).GetComponent<SlotInventario>();
+            numSlotsNoInventario[i] = slotsDeInventario.GetChild(i).GetComponent<SlotInventario>();
         }
     }
 

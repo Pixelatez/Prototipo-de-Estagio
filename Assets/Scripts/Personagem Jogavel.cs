@@ -36,8 +36,10 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     protected float expAtual = 0;
     [SerializeField]
     protected int nivelAtual = 1;
-    [SerializeField, Tooltip("Quantos pontos de atributo o jogador receberá por nível.")]
+    [SerializeField, Tooltip("Quantos Pontos de Atributo o jogador receberá por nível.")]
     protected int pontosPorNivel = 4;
+    [SerializeField]
+    protected int pontosRestantes = 0;
 
     [Header("Valores de Atributos Iniciais")]
 
@@ -85,12 +87,13 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     protected bool emCooldown = false, olhandoDireita = true;
     protected int forcaTotal, destrezaTotal, inteligenciaTotal, vitalidadeTotal, resistenciaTotal, agilidadeTotal;
     protected float danoMeleeTotal, danoRangedTotal, danoMagicoTotal, vidaAtual, vidaMaximaTotal, defesaTotal, velocidadeTotal;
+    protected float expProximoNivel;
 
     #region Valores de Ataque Desarmado
 
-    private float danoPunhos = 2f, cooldownPunhos = 1f;
-    private float alturaHitboxPunhos = 1.5f, larguraHitboxPunhos = 1.5f;
-    private Vector3 posiHitboxPunhos = new(1, 0, 0);
+    private readonly float danoPunhos = 2f, cooldownPunhos = 1f;
+    private readonly float alturaHitboxPunhos = 1.5f, larguraHitboxPunhos = 1.5f;
+    private readonly Vector3 posiHitboxPunhos = new(1, 0, 0);
 
     #endregion
 
@@ -164,6 +167,16 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         velocidadeTotal = velocidadeBase * agilidadeTotal;
 
         #endregion
+
+        expProximoNivel = 25 * Mathf.Pow(1.3f, Mathf.Clamp(nivelAtual - 2, 0, nivelAtual));
+        expProximoNivel -= expProximoNivel % 0.01f;
+
+        if (expAtual >= expProximoNivel)
+        {
+            expAtual = Mathf.Clamp(expAtual - expProximoNivel, 0, expAtual);
+            nivelAtual++;
+            pontosRestantes += pontosPorNivel;
+        }
 
         noChao = ChecagemChao(); // Raycasts dependem da física do Unity, que só é processada a cada FixedUpdate.
         rb.gravityScale = gravidade;
@@ -270,35 +283,44 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
                 if (ataqueCorpo_a_Corpo)
                 {
-                    Vector3 posicaoHitboxReal = Vector3.zero;
-                    Vector2 tamanhoHitbox = Vector2.zero;
-                    float danoCausado = 0f;
+                    Vector3 posicaoHitboxReal;
+                    Vector2 tamanhoHitbox;
+                    float danoCausado;
+                    ItemArma.TipoDeDano tipoDeDano;
 
-                    if (olhandoDireita)
+                    if (armaEquipada == null)
                     {
-                        if (armaEquipada == null)
-                        {
-                            posicaoHitboxReal = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
-                            tamanhoHitbox = new(larguraHitboxPunhos / 2, alturaHitboxPunhos / 2);
-                            danoCausado = danoPunhos + danoMeleeTotal;
-                        }
-                        else
-                        {
+                        if (olhandoDireita) posicaoHitboxReal = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
+                        else posicaoHitboxReal = new Vector3(-posiHitboxPunhos.x - larguraHitboxPunhos / 2, posiHitboxPunhos.y);
 
-                        }
+                        tamanhoHitbox = new(larguraHitboxPunhos / 2, alturaHitboxPunhos / 2);
+                        danoCausado = danoMeleeTotal + danoPunhos;
                     }
                     else
                     {
-                        if (armaEquipada == null)
-                        {
-                            posicaoHitboxReal = new Vector3(-posiHitboxPunhos.x - larguraHitboxPunhos / 2, posiHitboxPunhos.y);
-                            tamanhoHitbox = new(larguraHitboxPunhos / 2, alturaHitboxPunhos / 2);
-                            danoCausado = danoPunhos + danoMeleeTotal;
-                        }
-                        else
-                        {
+                        if (olhandoDireita) posicaoHitboxReal = new Vector3(armaEquipada.posicaoHitbox.x + armaEquipada.larguraHitbox / 2, armaEquipada.posicaoHitbox.y);
+                        else posicaoHitboxReal = new Vector3(-armaEquipada.posicaoHitbox.x - armaEquipada.larguraHitbox / 2, armaEquipada.posicaoHitbox.y);
 
+                        tamanhoHitbox = new(armaEquipada.larguraHitbox / 2, armaEquipada.alturaHitbox / 2);
+                        float danoAtributo = 0;
+
+                        switch (armaEquipada.tipoDeDano)
+                        {
+                            case ItemArma.TipoDeDano.Melee:
+                                tipoDeDano = ItemArma.TipoDeDano.Melee;
+                                danoAtributo = danoMeleeTotal;
+                                break;
+                            case ItemArma.TipoDeDano.Ranged:
+                                tipoDeDano = ItemArma.TipoDeDano.Ranged;
+                                danoAtributo = danoRangedTotal;
+                                break;
+                            case ItemArma.TipoDeDano.Magico:
+                                tipoDeDano = ItemArma.TipoDeDano.Magico;
+                                danoAtributo = danoMagicoTotal;
+                                break;
                         }
+
+                        danoCausado = danoAtributo + armaEquipada.dano;
                     }
 
                     Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, 0, 7);
@@ -307,6 +329,11 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                     {
                         if (alvos[i].TryGetComponent<IDamageable>(out IDamageable alvo))
                         {
+                            InimigoBase inimigo = alvos[i].GetComponent<InimigoBase>();
+                            if (Mathf.Clamp(inimigo.VidaAtual - danoCausado, 0, inimigo.VidaMaxima) == 0)
+                            {
+                                expAtual += inimigo.EXPDrop;
+                            }
                             alvo.LevarDano(danoCausado);
                         }
                     }
