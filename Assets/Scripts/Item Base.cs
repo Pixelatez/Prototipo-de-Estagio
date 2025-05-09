@@ -21,4 +21,10 @@ public class ItemBase : ScriptableObject
         get { return m_Quantidade; }
         set { m_Quantidade = Mathf.Clamp(value, 0, StackMaxima); }
     }
+
+    [Tooltip("Textura do item no inventário.")]
+    public Texture2D texturaItem;
+
+    [Tooltip("Textura do item largado no chão para coletar.")]
+    public Texture2D texturaDropado;
 }

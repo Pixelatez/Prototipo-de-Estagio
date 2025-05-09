@@ -261,15 +261,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Interagir"",
-                    ""type"": ""Value"",
-                    ""id"": ""d8be93d1-4b2d-404c-970d-1fc18b7d93f8"",
-                    ""expectedControlType"": ""Integer"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -281,17 +272,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Inventario"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""81ec752d-cf1e-47b3-8c4f-cd9a70038f23"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Interagir"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -322,7 +302,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
         m_Outros = asset.FindActionMap("Outros", throwIfNotFound: true);
         m_Outros_Inventario = m_Outros.FindAction("Inventario", throwIfNotFound: true);
         m_Outros_PosicaoMouse = m_Outros.FindAction("Posicao Mouse", throwIfNotFound: true);
-        m_Outros_Interagir = m_Outros.FindAction("Interagir", throwIfNotFound: true);
     }
 
     ~@InputJogador()
@@ -610,7 +589,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
     private List<IOutrosActions> m_OutrosActionsCallbackInterfaces = new List<IOutrosActions>();
     private readonly InputAction m_Outros_Inventario;
     private readonly InputAction m_Outros_PosicaoMouse;
-    private readonly InputAction m_Outros_Interagir;
     /// <summary>
     /// Provides access to input actions defined in input action map "Outros".
     /// </summary>
@@ -630,10 +608,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Outros/PosicaoMouse".
         /// </summary>
         public InputAction @PosicaoMouse => m_Wrapper.m_Outros_PosicaoMouse;
-        /// <summary>
-        /// Provides access to the underlying input action "Outros/Interagir".
-        /// </summary>
-        public InputAction @Interagir => m_Wrapper.m_Outros_Interagir;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -666,9 +640,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
             @PosicaoMouse.started += instance.OnPosicaoMouse;
             @PosicaoMouse.performed += instance.OnPosicaoMouse;
             @PosicaoMouse.canceled += instance.OnPosicaoMouse;
-            @Interagir.started += instance.OnInteragir;
-            @Interagir.performed += instance.OnInteragir;
-            @Interagir.canceled += instance.OnInteragir;
         }
 
         /// <summary>
@@ -686,9 +657,6 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
             @PosicaoMouse.started -= instance.OnPosicaoMouse;
             @PosicaoMouse.performed -= instance.OnPosicaoMouse;
             @PosicaoMouse.canceled -= instance.OnPosicaoMouse;
-            @Interagir.started -= instance.OnInteragir;
-            @Interagir.performed -= instance.OnInteragir;
-            @Interagir.canceled -= instance.OnInteragir;
         }
 
         /// <summary>
@@ -780,12 +748,5 @@ public partial class @InputJogador: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPosicaoMouse(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Interagir" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInteragir(InputAction.CallbackContext context);
     }
 }

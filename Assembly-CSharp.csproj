@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\Objeto Coletavel.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inventario.cs" />
     <Compile Include="Assets\Scripts\Input\Input Jogador.cs" />
+    <Compile Include="Assets\Scripts\Arma Melee.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inimigo.cs" />
     <Compile Include="Assets\Scripts\Main Manager Behavior.cs" />
     <Compile Include="Assets\Scripts\Area Vitoria.cs" />
@@ -77,7 +78,7 @@
     <Compile Include="Assets\Scripts\UI\UI Derrota.cs" />
     <Compile Include="Assets\Scripts\Inimigo Base.cs" />
     <Compile Include="Assets\Scripts\UI\UI Objetivo.cs" />
-    <Compile Include="Assets\Scripts\Item Arma.cs" />
+    <Compile Include="Assets\Scripts\Arma Base.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
     <Compile Include="Assets\Scripts\Personagem Jogavel.cs" />
   </ItemGroup>

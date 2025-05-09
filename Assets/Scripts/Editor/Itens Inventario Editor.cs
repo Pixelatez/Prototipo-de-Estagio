@@ -22,7 +22,7 @@ public class ItensInventarioEditor : Editor
     }
 }
 
-[CustomEditor(typeof(ItemArma))]
+[CustomEditor(typeof(ArmaBase))]
 public class ArmasInventarioEditor : ItensInventarioEditor
 {
     public override void OnInspectorGUI()

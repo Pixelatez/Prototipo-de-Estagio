@@ -5,7 +5,6 @@ public class ItemConsumivel : ItemBase
 {
     [Header("Valores De Item Consumivel")]
     public TipoDeConsumivel tipoDeConsumivel;
-    public Texture2D texturaItem;
 
     [HideInInspector]
     public int curaAoUso;

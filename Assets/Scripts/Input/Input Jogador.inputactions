@@ -175,15 +175,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Interagir",
-                    "type": "Value",
-                    "id": "d8be93d1-4b2d-404c-970d-1fc18b7d93f8",
-                    "expectedControlType": "Integer",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -195,17 +186,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Inventario",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "81ec752d-cf1e-47b3-8c4f-cd9a70038f23",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Interagir",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

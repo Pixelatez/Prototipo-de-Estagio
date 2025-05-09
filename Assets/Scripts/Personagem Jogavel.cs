@@ -11,11 +11,19 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     public UIInventario Inventario { get { return UIDeInventario; } }
     public float VidaAtual { get { return vidaAtual; } set { vidaAtual = Mathf.Clamp(vidaAtual + value, 0, vidaMaximaTotal); } }
     public float VidaMaxima { get { return vidaMaximaTotal; } }
+    public float VidaMaximaBase { get { return VidaMaximaBase; } }
+    public int PontosRestantes { get { return pontosRestantes; } set { pontosRestantes = value; } }
+    public int PontosForca { get { return forcaBase; } set { forcaBase = value; } }
+    public int PontosDestreza { get { return destrezaBase; } set { destrezaBase = value; } }
+    public int PontosInteligencia { get { return inteligenciaBase; } set { inteligenciaBase = value; } }
+    public int PontosVitalidade { get { return vitalidadeBase; } set { vitalidadeBase = value; } }
+    public int PontosResistencia { get { return resistenciaBase; } set { resistenciaBase = value; } }
+    public int PontosAgilidade { get { return agilidadeBase; } set { agilidadeBase = value; } }
 
     [Header("Equipamento")]
 
     [SerializeField]
-    protected ItemArma armaEquipada;
+    protected ArmaBase armaEquipada;
 
     [Header("Valores de Movimento")]
 
@@ -78,13 +86,16 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     [SerializeField]
     protected UIDerrota UIDeDerrota;
     [SerializeField]
+    protected Transform arma;
+    [SerializeField]
     protected bool modoDebug = false;
 
     protected InputJogador input;
     protected Collider2D colisor;
     protected Rigidbody2D rb;
+    protected Vector3 direcaoMouse;
     protected bool noChao, emPulo = false, emCoyoteTime = false, coyoteTimeExpirado = false, inventarioAberto = false, morto = false;
-    protected bool emCooldown = false, olhandoDireita = true;
+    protected bool emCooldown = false;
     protected int forcaTotal, destrezaTotal, inteligenciaTotal, vitalidadeTotal, resistenciaTotal, agilidadeTotal;
     protected float danoMeleeTotal, danoRangedTotal, danoMagicoTotal, vidaAtual, vidaMaximaTotal, defesaTotal, velocidadeTotal;
     protected float expProximoNivel;
@@ -118,6 +129,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         input.Movimento.Pular.Enable();
         input.Combate.Ataque.Enable();
         input.Outros.Inventario.Enable();
+        input.Outros.PosicaoMouse.Enable();
         input.Movimento.Pular.performed += PuloInput;
         input.Combate.Ataque.performed += AtaqueInput;
         input.Outros.Inventario.performed += InventarioInput;
@@ -129,6 +141,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         input.Movimento.Pular.Disable();
         input.Combate.Ataque.Disable();
         input.Outros.Inventario.Disable();
+        input.Outros.PosicaoMouse.Disable();
         input.Movimento.Pular.performed -= PuloInput;
         input.Combate.Ataque.performed -= AtaqueInput;
         input.Outros.Inventario.performed -= InventarioInput;
@@ -169,11 +182,12 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         #endregion
 
         expProximoNivel = 25 * Mathf.Pow(1.3f, Mathf.Clamp(nivelAtual - 2, 0, nivelAtual));
-        expProximoNivel -= expProximoNivel % 0.01f;
+        expProximoNivel -= expProximoNivel % 0.01f; // Remover decimais depois do segundo (Ex: 12,57 ao invés de 12,5795483)
 
+        // Se a exp atual ultrapassar o necessário para o próximo nível
         if (expAtual >= expProximoNivel)
         {
-            expAtual = Mathf.Clamp(expAtual - expProximoNivel, 0, expAtual);
+            expAtual = Mathf.Clamp(expAtual - expProximoNivel, 0, expAtual); // Diminuir exp atual pelo necessário para subir de nível, com o minimo de 0.
             nivelAtual++;
             pontosRestantes += pontosPorNivel;
         }
@@ -181,9 +195,14 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         noChao = ChecagemChao(); // Raycasts dependem da física do Unity, que só é processada a cada FixedUpdate.
         rb.gravityScale = gravidade;
         Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>(); // Pegar input do jogador.
-        Transform arma = transform.GetChild(0);
+        Vector2 posicaoMouseRaw = input.Outros.PosicaoMouse.ReadValue<Vector2>(); // Pegar posicao do mouse na tela.
+        Vector2 posicaoMouse = Camera.main.ScreenToWorldPoint(posicaoMouseRaw);
+        direcaoMouse = (transform.position - (Vector3)posicaoMouse); // Pegar direção do mouse em relação ao jogador.
+        arma.rotation = Quaternion.LookRotation(Vector3.forward, direcaoMouse.normalized) * Quaternion.Euler(0, 0, -90);
+        arma.GetChild(0).transform.localPosition = posiHitboxPunhos;
 
-        if (inputMovimento.magnitude == 0) // Se não tiver input do jogador, o jogador para de se mover.
+        // Se não tiver input do jogador, o jogador para de se mover.
+        if (inputMovimento.magnitude == 0)
         {
             rb.linearVelocityX = 0;
         }
@@ -192,16 +211,10 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
             rb.linearVelocityX = inputMovimento.x * velocidadeTotal;
         }
 
-        if (inputMovimento.x > 0)
-        {
-            arma.localPosition = new Vector2(1, 0);
-            olhandoDireita = true;
-        }
-        else if (inputMovimento.x < 0)
-        {
-            arma.localPosition = new Vector2(-1, 0);
-            olhandoDireita = false;
-        }
+        // Inverter o sprite dependendo de onde olhar.
+        bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) == 1 ? false : true;
+        GetComponent<SpriteRenderer>().flipX = inverter;
+        arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
 
         if (noChao && coyoteTimeExpirado) coyoteTimeExpirado = false; // Resetar coyote time para poder acontecer outra vez
 
@@ -266,64 +279,18 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
             {
                 emCooldown = true;
 
-                bool ataqueCorpo_a_Corpo = false;
-                if (armaEquipada == null) ataqueCorpo_a_Corpo = true;
+                if (armaEquipada != null)
+                {
+
+                }
                 else
                 {
-                    switch (armaEquipada.tipoDeAtaque)
-                    {
-                        case ItemArma.TipoDeAtaque.Corpo_A_Corpo:
-                            ataqueCorpo_a_Corpo = true;
-                            break;
-                        case ItemArma.TipoDeAtaque.Distancia:
-                            ataqueCorpo_a_Corpo = false;
-                            break;
-                    }
-                }
+                    Vector3 posicaoHitboxReal = new(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
+                    posicaoHitboxReal = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * posicaoHitboxReal;
+                    Vector2 tamanhoHitbox = new(larguraHitboxPunhos, alturaHitboxPunhos);
+                    float danoCausado = danoMeleeTotal + danoPunhos;
 
-                if (ataqueCorpo_a_Corpo)
-                {
-                    Vector3 posicaoHitboxReal;
-                    Vector2 tamanhoHitbox;
-                    float danoCausado;
-                    ItemArma.TipoDeDano tipoDeDano;
-
-                    if (armaEquipada == null)
-                    {
-                        if (olhandoDireita) posicaoHitboxReal = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
-                        else posicaoHitboxReal = new Vector3(-posiHitboxPunhos.x - larguraHitboxPunhos / 2, posiHitboxPunhos.y);
-
-                        tamanhoHitbox = new(larguraHitboxPunhos / 2, alturaHitboxPunhos / 2);
-                        danoCausado = danoMeleeTotal + danoPunhos;
-                    }
-                    else
-                    {
-                        if (olhandoDireita) posicaoHitboxReal = new Vector3(armaEquipada.posicaoHitbox.x + armaEquipada.larguraHitbox / 2, armaEquipada.posicaoHitbox.y);
-                        else posicaoHitboxReal = new Vector3(-armaEquipada.posicaoHitbox.x - armaEquipada.larguraHitbox / 2, armaEquipada.posicaoHitbox.y);
-
-                        tamanhoHitbox = new(armaEquipada.larguraHitbox / 2, armaEquipada.alturaHitbox / 2);
-                        float danoAtributo = 0;
-
-                        switch (armaEquipada.tipoDeDano)
-                        {
-                            case ItemArma.TipoDeDano.Melee:
-                                tipoDeDano = ItemArma.TipoDeDano.Melee;
-                                danoAtributo = danoMeleeTotal;
-                                break;
-                            case ItemArma.TipoDeDano.Ranged:
-                                tipoDeDano = ItemArma.TipoDeDano.Ranged;
-                                danoAtributo = danoRangedTotal;
-                                break;
-                            case ItemArma.TipoDeDano.Magico:
-                                tipoDeDano = ItemArma.TipoDeDano.Magico;
-                                danoAtributo = danoMagicoTotal;
-                                break;
-                        }
-
-                        danoCausado = danoAtributo + armaEquipada.dano;
-                    }
-
-                    Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, 0, 7);
+                    Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, arma.eulerAngles.z, 7);
 
                     for (int i = 0; i < alvos.Length; i++)
                     {
@@ -338,10 +305,6 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                         }
                     }
                 }
-                else
-                {
-
-                }
 
                 StartCoroutine(Cooldown());
             }
@@ -351,9 +314,9 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     private IEnumerator Cooldown()
     {
         if (armaEquipada == null) yield return new WaitForSeconds(cooldownPunhos);
-        else if (armaEquipada.tipoDeAtaque == ItemArma.TipoDeAtaque.Corpo_A_Corpo)
+        else
         {
-
+            yield return new WaitForSeconds(armaEquipada.cooldownDeAtaque);
         }
         emCooldown = false;
     }
@@ -426,37 +389,28 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
             Handles.DrawSolidRectangleWithOutline(quadradoVerticesChao, new Color(0, 1, 0, 0.3f), Color.green);
 
-            
-            Vector3 posicaoHitboxGizmos = Vector3.zero;
+            Vector3 posicaoHitboxGizmos;
 
             if (armaEquipada == null)
             {
-                if (olhandoDireita) { posicaoHitboxGizmos = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y); }
-                else { posicaoHitboxGizmos = new Vector3(-posiHitboxPunhos.x - larguraHitboxPunhos / 2, posiHitboxPunhos.y); }
+                posicaoHitboxGizmos = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
+
+                Vector3[] quadradoVerticesMelee = new Vector3[4];
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int l = -1;
+                    int a = -1;
+
+                    if (i >= 2) { a = 1; }
+                    if (i % 3 == 0) { l = 1; }
+
+                    Vector3 teste = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * (posicaoHitboxGizmos + new Vector3((larguraHitboxPunhos / 2) * l, (alturaHitboxPunhos / 2) * a));
+                    quadradoVerticesMelee[i] = transform.position + teste;
+                }
+
+                Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);
             }
-            else if (armaEquipada.tipoDeAtaque == ItemArma.TipoDeAtaque.Corpo_A_Corpo)
-            {
-
-            }
-            else
-            {
-                return;
-            }
-
-            Vector3[] quadradoVerticesMelee = new Vector3[4];
-
-            for (int i = 0; i < 4; i++)
-            {
-                int l = -1;
-                int a = -1;
-
-                if (i >= 2) { a = 1; }
-                if (i % 3 == 0) { l = 1; }
-
-                quadradoVerticesMelee[i] = transform.position + posicaoHitboxGizmos + new Vector3((larguraHitboxPunhos / 2) * l, (alturaHitboxPunhos / 2) * a);
-            }
-
-            Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);
         }
     }
 }
