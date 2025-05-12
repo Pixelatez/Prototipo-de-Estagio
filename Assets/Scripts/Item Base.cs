@@ -14,17 +14,19 @@ public class ItemBase : ScriptableObject
         set { m_StackMaxima = Mathf.Clamp(value, 1, value); }
     }
 
-    private int m_Quantidade;
+    [SerializeField, Tooltip("Textura do item no inventário.")]
+    protected Sprite spriteItem;
 
-    public int Quantidade
+    public Sprite SpriteItem
     {
-        get { return m_Quantidade; }
-        set { m_Quantidade = Mathf.Clamp(value, 0, StackMaxima); }
+        get { return spriteItem; }
     }
 
-    [Tooltip("Textura do item no inventário.")]
-    public Texture2D texturaItem;
+    [SerializeField, Tooltip("Textura do item largado no chão para coletar.")]
+    protected Sprite spriteDropado;
 
-    [Tooltip("Textura do item largado no chão para coletar.")]
-    public Texture2D texturaDropado;
+    public Sprite SpriteDropado
+    {
+        get { return spriteDropado; }
+    }
 }

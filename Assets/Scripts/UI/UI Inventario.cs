@@ -7,6 +7,7 @@ public class UIInventario : MonoBehaviour
 {
     public PersonagemJogavel Jogador { get { return jogador; } set { jogador = value; } }
     public InputJogador Input { get { return input; } set { input = value; } }
+    public ItemColetado[] ItensColetados { get { return itensColetados; } }
     public int SlotVazio
     {
         get
@@ -37,12 +38,14 @@ public class UIInventario : MonoBehaviour
     private PersonagemJogavel jogador;
     private InputJogador input;
     private SlotInventario[] numSlotsNoInventario;
+    private ItemColetado[] itensColetados;
     private Transform[] atributos;
     private TextMeshProUGUI[] valoresDeAtributo;
 
     private void Awake()
     {
         numSlotsNoInventario = new SlotInventario[slotsDeInventario.childCount];
+        itensColetados = new ItemColetado[slotsDeInventario.childCount];
 
         for (int i = 0; i < slotsDeInventario.childCount; i++)
         {
@@ -63,6 +66,8 @@ public class UIInventario : MonoBehaviour
 
     private void Update()
     {
+        #region Atributos
+
         valoresDeAtributo[0].text = jogador.PontosRestantes.ToString();
         valoresDeAtributo[1].text = jogador.PontosForca.ToString();
         valoresDeAtributo[2].text = jogador.PontosDestreza.ToString();
@@ -70,6 +75,21 @@ public class UIInventario : MonoBehaviour
         valoresDeAtributo[4].text = jogador.PontosVitalidade.ToString();
         valoresDeAtributo[5].text = jogador.PontosResistencia.ToString();
         valoresDeAtributo[6].text = jogador.PontosAgilidade.ToString();
+
+        #endregion
+
+        for (int i = 0; i < slotsDeInventario.childCount; i++) // Pegar qual item está em qual slot.
+        {
+            Transform slotAtual = slotsDeInventario.GetChild(i);
+            if (slotAtual.childCount > 0)
+            {
+                if (slotAtual.GetChild(0).TryGetComponent<ItemColetado>(out ItemColetado item)) itensColetados[i] = item;
+            }
+            else
+            {
+                itensColetados[i] = null;
+            }
+        }
     }
 
     public void AdicionarForca()

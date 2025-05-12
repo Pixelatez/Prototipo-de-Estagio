@@ -9,13 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ab20e7bc61e8b843b0fea7e6b2f20da, type: 3}
+  m_Script: {fileID: 11500000, guid: 6a4b1d5d14c928d46b4961d58b0a9987, type: 3}
   m_Name: Espada
   m_EditorClassIdentifier: 
   itemStackavel: 0
+  spriteItem: {fileID: 0}
+  spriteDropado: {fileID: 0}
   tipoDeAtaque: 0
-  tipoDeDano: 0
-  dano: 10
-  posicaoHitbox: {x: 0, y: 0, z: 0}
-  larguraHitbox: 0
-  alturaHitbox: 0
+  dano: 5
+  cooldownDeAtaque: 1
+  knockback: 0
+  texturaEquipado: {fileID: 0}
+  animacaoDeAtaque: {fileID: 0}
+  posicaoHitbox: {x: 1, y: 0, z: 0}
+  larguraHitbox: 2
+  alturaHitbox: 1.5

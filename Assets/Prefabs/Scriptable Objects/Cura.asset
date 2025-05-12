@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd4b10f80b66e63449ec5bd3f39c5f72, type: 3}
-  m_Name: Item Consumivel
+  m_Name: Cura
   m_EditorClassIdentifier: 
-  itemStackavel: 0
+  itemStackavel: 1
+  spriteItem: {fileID: 21300000, guid: c52a6bbfe05f0414eb30e0789efc7a93, type: 3}
+  spriteDropado: {fileID: 0}
   tipoDeConsumivel: 0
-  texturaItem: {fileID: 2800000, guid: c52a6bbfe05f0414eb30e0789efc7a93, type: 3}
-  curaAoUso: 0
+  curaAoUso: 25
   duracaoBuff: 0

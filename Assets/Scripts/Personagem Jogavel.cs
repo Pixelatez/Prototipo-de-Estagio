@@ -12,6 +12,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     public float VidaAtual { get { return vidaAtual; } set { vidaAtual = Mathf.Clamp(vidaAtual + value, 0, vidaMaximaTotal); } }
     public float VidaMaxima { get { return vidaMaximaTotal; } }
     public float VidaMaximaBase { get { return VidaMaximaBase; } }
+    public float ExpAtual { get { return expAtual; } set { expAtual = value; } }
     public int PontosRestantes { get { return pontosRestantes; } set { pontosRestantes = value; } }
     public int PontosForca { get { return forcaBase; } set { forcaBase = value; } }
     public int PontosDestreza { get { return destrezaBase; } set { destrezaBase = value; } }
@@ -41,7 +42,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     [Header("Valores de Nível")]
 
     [SerializeField, Tooltip("Formula de Exp para próximo nível: 25 * 1.3^(nívelAtual - 2)")]
-    protected float expAtual = 0;
+    private float expAtual = 0;
     [SerializeField]
     protected int nivelAtual = 1;
     [SerializeField, Tooltip("Quantos Pontos de Atributo o jogador receberá por nível.")]
@@ -94,6 +95,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     protected Collider2D colisor;
     protected Rigidbody2D rb;
     protected Vector3 direcaoMouse;
+    protected Vector2 posicaoMouseRaw = Vector2.zero;
     protected bool noChao, emPulo = false, emCoyoteTime = false, coyoteTimeExpirado = false, inventarioAberto = false, morto = false;
     protected bool emCooldown = false;
     protected int forcaTotal, destrezaTotal, inteligenciaTotal, vitalidadeTotal, resistenciaTotal, agilidadeTotal;
@@ -193,10 +195,12 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         }
 
         noChao = ChecagemChao(); // Raycasts dependem da física do Unity, que só é processada a cada FixedUpdate.
+
         rb.gravityScale = gravidade;
-        Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>(); // Pegar input do jogador.
-        Vector2 posicaoMouseRaw = input.Outros.PosicaoMouse.ReadValue<Vector2>(); // Pegar posicao do mouse na tela.
-        Vector2 posicaoMouse = Camera.main.ScreenToWorldPoint(posicaoMouseRaw);
+
+        Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>(); // Pegar input do mouse se o jogo estiver em foco.
+
+        Vector2 posicaoMouse = Camera.main.ScreenToWorldPoint(posicaoMouseRaw); // Traduzir a posição do mouse na tela para o jogo.
         direcaoMouse = (transform.position - (Vector3)posicaoMouse); // Pegar direção do mouse em relação ao jogador.
         arma.rotation = Quaternion.LookRotation(Vector3.forward, direcaoMouse.normalized) * Quaternion.Euler(0, 0, -90);
         arma.GetChild(0).transform.localPosition = posiHitboxPunhos;
@@ -212,7 +216,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         }
 
         // Inverter o sprite dependendo de onde olhar.
-        bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) == 1 ? false : true;
+        bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) != 1;
         GetComponent<SpriteRenderer>().flipX = inverter;
         arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
 
@@ -221,6 +225,14 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         if (!noChao && !emCoyoteTime && !coyoteTimeExpirado) // Se não estiver no chão, em pulo, em Coyote Time e já não ter perdido o Coyote Time
         {
             StartCoroutine(CoyoteTime());
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (Application.isFocused)
+        {
+            posicaoMouseRaw = input.Outros.PosicaoMouse.ReadValue<Vector2>(); // Pegar posicao do mouse na tela.
         }
     }
 
@@ -281,7 +293,22 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
                 if (armaEquipada != null)
                 {
+                    float danoAtributos = 0;
 
+                    switch (armaEquipada.TipoDeAtaque)
+                    {
+                        case ArmaBase.TipoDeDano.Melee:
+                            danoAtributos = danoMeleeTotal;
+                            break;
+                        case ArmaBase.TipoDeDano.Ranged:
+                            danoAtributos = danoRangedTotal;
+                            break;
+                        case ArmaBase.TipoDeDano.Magico:
+                            danoAtributos = danoMagicoTotal;
+                            break;
+                    }
+
+                    armaEquipada.Ataque(danoAtributos, this, arma.eulerAngles);
                 }
                 else
                 {
@@ -316,7 +343,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         if (armaEquipada == null) yield return new WaitForSeconds(cooldownPunhos);
         else
         {
-            yield return new WaitForSeconds(armaEquipada.cooldownDeAtaque);
+            yield return new WaitForSeconds(armaEquipada.CooldownDeAtaque);
         }
         emCooldown = false;
     }
@@ -356,6 +383,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
     public void LevarDano(float dano)
     {
+        // Diminuir dano recebido pela resistência total do jogador, até o minimo de 1 de dano.
         VidaAtual = -Mathf.Clamp(dano + Mathf.Clamp(dano - resistenciaTotal * defesaBase, 0, dano), 1, dano);
     }
 
@@ -391,7 +419,27 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
             Vector3 posicaoHitboxGizmos;
 
-            if (armaEquipada == null)
+            if (armaEquipada is ArmaMelee armaMelee)
+            {
+                posicaoHitboxGizmos = new Vector3(armaMelee.PosicaoHitbox.x + armaMelee.LarguraHitbox / 2, armaMelee.PosicaoHitbox.y);
+
+                Vector3[] quadradoVerticesMelee = new Vector3[4];
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int l = -1;
+                    int a = -1;
+
+                    if (i >= 2) { a = 1; }
+                    if (i % 3 == 0) { l = 1; }
+
+                    Vector3 teste = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * (posicaoHitboxGizmos + new Vector3((armaMelee.LarguraHitbox / 2) * l, (armaMelee.AlturaHitbox / 2) * a));
+                    quadradoVerticesMelee[i] = transform.position + teste;
+                }
+
+                Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);
+            }
+            else
             {
                 posicaoHitboxGizmos = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
 
