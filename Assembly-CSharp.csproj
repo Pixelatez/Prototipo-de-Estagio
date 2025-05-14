@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\UI\Item Coletado.cs" />
     <Compile Include="Assets\Scripts\Objeto Coletavel.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inventario.cs" />
+    <Compile Include="Assets\Scripts\UI\Slot Equipamento.cs" />
     <Compile Include="Assets\Scripts\Input\Input Jogador.cs" />
     <Compile Include="Assets\Scripts\Arma Melee.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inimigo.cs" />

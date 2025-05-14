@@ -6,7 +6,8 @@ public class ItemBase : ScriptableObject
     [HideInInspector]
     public bool itemStackavel = false;
 
-    private int m_StackMaxima;
+    [SerializeField, HideInInspector]
+    private int m_StackMaxima = 1;
 
     public int StackMaxima
     {

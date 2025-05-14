@@ -4,6 +4,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEditor;
+using Unity.VisualScripting;
+using System;
 
 public class PersonagemJogavel : MonoBehaviour, IDamageable
 {
@@ -183,6 +185,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
         #endregion
 
+        EquiparArma();
         expProximoNivel = 25 * Mathf.Pow(1.3f, Mathf.Clamp(nivelAtual - 2, 0, nivelAtual));
         expProximoNivel -= expProximoNivel % 0.01f; // Remover decimais depois do segundo (Ex: 12,57 ao invés de 12,5795483)
 
@@ -392,6 +395,23 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         Time.timeScale = 0f;
         UIDeDerrota.gameObject.SetActive(true);
         this.enabled = false;
+    }
+
+    private void EquiparArma()
+    {
+        for (int i = 0; i < Inventario.SlotsDeEquipamento.childCount; i++)
+        {
+            SlotEquipamento slotDeEquipamento = Inventario.SlotsDeEquipamento.GetChild(i).GetComponent<SlotEquipamento>();
+
+            if (slotDeEquipamento.TipoDeSlot != null)
+            {
+                if (slotDeEquipamento.TipoDeSlot is ArmaBase)
+                {
+                    if (slotDeEquipamento.ItemNoSlot == null) armaEquipada = null;
+                    else armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                }
+            }
+        }
     }
 
     protected virtual void OnDrawGizmos()

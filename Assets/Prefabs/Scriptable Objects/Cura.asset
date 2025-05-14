@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Cura
   m_EditorClassIdentifier: 
   itemStackavel: 1
+  m_StackMaxima: 64
   spriteItem: {fileID: 21300000, guid: c52a6bbfe05f0414eb30e0789efc7a93, type: 3}
   spriteDropado: {fileID: 0}
   tipoDeConsumivel: 0

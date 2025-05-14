@@ -23,6 +23,18 @@ public class ObjetoColetavel : MonoBehaviour
         }
     }
 
+    private SpriteRenderer sRenderer;
+
+    private void Awake()
+    {
+        sRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void Update()
+    {
+        sRenderer.sprite = item.SpriteItem;
+    }
+
     private void OnTriggerEnter2D(Collider2D colisor)
     {
         if (colisor.TryGetComponent<PersonagemJogavel>(out PersonagemJogavel jogador) && colisor.gameObject.layer == 3)
@@ -31,9 +43,9 @@ public class ObjetoColetavel : MonoBehaviour
 
             for (int i = 0; i < jogador.Inventario.ItensColetados.Length; i++)
             {
-                if (jogador.Inventario.ItensColetados[i] != null)
+                if (jogador.Inventario.ItensColetados[i] != null) // Se tiver um item no inventário.
                 {
-                    if (jogador.Inventario.ItensColetados[i].ItemInventario == itemNoInventario)
+                    if (jogador.Inventario.ItensColetados[i].ItemInventario == item) // Se o item for do mesmo tipo do coletavel.
                     {
                         ItemColetado itemAtual = jogador.Inventario.ItensColetados[i];
                         int espacoLivre = itemAtual.ItemInventario.StackMaxima - itemAtual.Quantidade;
@@ -57,6 +69,7 @@ public class ObjetoColetavel : MonoBehaviour
                 GameObject novoItem = Instantiate(itemNoInventario.gameObject, jogador.Inventario.SlotsDeInventario.GetChild(jogador.Inventario.SlotVazio));
                 ItemColetado scriptItem = novoItem.GetComponent<ItemColetado>();
                 scriptItem.Inventario = jogador.Inventario;
+                scriptItem.ParenteDepoisDeSoltar = novoItem.transform.parent;
                 scriptItem.ItemInventario = item;
                 scriptItem.Quantidade = quantidadeAtual;
             }

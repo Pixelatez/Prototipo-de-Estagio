@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
+using TMPro;
 
 public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     public ItemBase ItemInventario { get { return item; } set { item = value; } }
-    public Transform ParenteDepoisDeSoltar { set { parenteDepoisDeSoltar = value; } }
-    public UIInventario Inventario { set { inventario = value; } }
+    public Transform ParenteDepoisDeSoltar { get { return parenteDepoisDeSoltar; } set { parenteDepoisDeSoltar = value; } }
+    public UIInventario Inventario { get { return Inventario; } set { inventario = value; } }
 
     [Header("Outros")]
 
@@ -15,6 +15,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
     private UIInventario inventario;
 
     private Image imagem;
+    private TextMeshProUGUI texto;
     private Transform parenteDepoisDeSoltar;
     private ItemBase item;
     private int m_Quantidade;
@@ -32,11 +33,14 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
     private void Awake()
     {
         imagem = GetComponent<Image>();
+        texto = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
     }
 
     private void Update()
     {
         imagem.sprite = item.SpriteItem;
+        if (item.itemStackavel) texto.text = Quantidade.ToString();
+        else texto.text = string.Empty;
     }
 
     public void OnBeginDrag(PointerEventData eventData)

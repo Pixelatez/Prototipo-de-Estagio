@@ -12,11 +12,15 @@ public class ItensInventarioEditor : Editor
 
         GUILayout.Space(5);
         EditorGUILayout.LabelField("Valores de Stack", EditorStyles.boldLabel);
-        meuScript.itemStackavel = EditorGUILayout.Toggle("Item Stackavel", meuScript.itemStackavel);
+        bool stackavel = EditorGUILayout.Toggle("Item Stackavel", meuScript.itemStackavel);
+        serializedObject.FindProperty("itemStackavel").boolValue = stackavel;
 
         if (meuScript.itemStackavel)
         {
-            meuScript.StackMaxima = EditorGUILayout.IntField("Stack Maxima", meuScript.StackMaxima);
+            int stackMaxima = EditorGUILayout.IntField("Stack Maxima", Mathf.Clamp(meuScript.StackMaxima, 1, meuScript.StackMaxima));
+            serializedObject.FindProperty("m_StackMaxima").intValue = stackMaxima;
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 }

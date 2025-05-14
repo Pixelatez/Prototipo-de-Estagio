@@ -15,12 +15,15 @@ public class ConsumivelInventarioEditor : ItensInventarioEditor
         {
             case ItemConsumivel.TipoDeConsumivel.Cura:
                 EditorGUILayout.LabelField("Valores de Cura", EditorStyles.boldLabel);
-                meuScript.curaAoUso = EditorGUILayout.IntField("Cura ao Uso", meuScript.curaAoUso);
+                int cura = EditorGUILayout.IntField("Cura ao Uso", meuScript.curaAoUso);
+                serializedObject.FindProperty("curaAoUso").intValue = cura;
                 break;
             case ItemConsumivel.TipoDeConsumivel.Buff:
                 EditorGUILayout.LabelField("Valores de Buffs", EditorStyles.boldLabel);
-                meuScript.duracaoBuff = EditorGUILayout.FloatField("Duração do Buff", meuScript.duracaoBuff);
+                float duracao = EditorGUILayout.FloatField("Duração do Buff", meuScript.duracaoBuff);
+                serializedObject.FindProperty("duracaoBuff").floatValue = duracao;
                 break;
         }
+        serializedObject.ApplyModifiedProperties();
     }
 }

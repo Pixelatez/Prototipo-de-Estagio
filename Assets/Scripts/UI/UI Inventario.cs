@@ -14,7 +14,7 @@ public class UIInventario : MonoBehaviour
         {
             for (int i = 0; i < numSlotsNoInventario.Length; i++)
             {
-                if (numSlotsNoInventario[i].transform.childCount == 0)
+                if (itensColetados[i] == null)
                 {
                     return i;
                 }
@@ -25,6 +25,7 @@ public class UIInventario : MonoBehaviour
     }
 
     public Transform SlotsDeInventario { get { return slotsDeInventario; } }
+    public Transform SlotsDeEquipamento { get { return slotsDeEquipamento; } }
 
     [Header("Referências")]
 
@@ -78,12 +79,19 @@ public class UIInventario : MonoBehaviour
 
         #endregion
 
-        for (int i = 0; i < slotsDeInventario.childCount; i++) // Pegar qual item está em qual slot.
+        for (int i = 0; i < numSlotsNoInventario.Length; i++) // Pegar qual item está em qual slot.
         {
-            Transform slotAtual = slotsDeInventario.GetChild(i);
+            Transform slotAtual = numSlotsNoInventario[i].transform;
             if (slotAtual.childCount > 0)
             {
                 if (slotAtual.GetChild(0).TryGetComponent<ItemColetado>(out ItemColetado item)) itensColetados[i] = item;
+            }
+            else if (itensColetados[i] != null)
+            {
+                if (itensColetados[i].ParenteDepoisDeSoltar != slotAtual)
+                {
+                    itensColetados[i] = null;
+                }
             }
             else
             {
