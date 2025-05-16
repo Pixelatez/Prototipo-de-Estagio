@@ -7,7 +7,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
 {
     public ItemBase ItemInventario { get { return item; } set { item = value; } }
     public Transform ParenteDepoisDeSoltar { get { return parenteDepoisDeSoltar; } set { parenteDepoisDeSoltar = value; } }
-    public UIInventario Inventario { get { return Inventario; } set { inventario = value; } }
+    public UIInventario Inventario { get { return inventario; } set { inventario = value; } }
 
     [Header("Outros")]
 
@@ -48,6 +48,12 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
         parenteDepoisDeSoltar = transform.parent;
         transform.SetParent(transform.root);
         imagem.raycastTarget = false;
+
+        if (item.GetType() == typeof(ArmaRanged))
+        { 
+            ArmaRanged ranged = item as ArmaRanged;
+            ranged.Municao = null;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)

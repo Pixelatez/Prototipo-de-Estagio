@@ -10,9 +10,23 @@ public class SlotEquipamento : SlotInventario
 
     public override void OnDrop(PointerEventData eventData)
     {
-        if (tipoDeSlotDeEquipamento.GetType() == eventData.pointerDrag.GetComponent<ItemColetado>().ItemInventario.GetType())
+        bool subclasse = eventData.pointerDrag.GetComponent<ItemColetado>().ItemInventario.GetType().IsSubclassOf(tipoDeSlotDeEquipamento.GetType());
+        if (subclasse || tipoDeSlotDeEquipamento.GetType() == eventData.pointerDrag.GetComponent<ItemColetado>().ItemInventario.GetType())
         {
-            base.OnDrop(eventData);
+            if (tipoDeSlotDeEquipamento.GetType().IsSubclassOf(typeof(ArmaduraBase)) || tipoDeSlotDeEquipamento is ArmaduraBase)
+            {
+                ArmaduraBase tipoDeSlot = tipoDeSlotDeEquipamento as ArmaduraBase;
+                ArmaduraBase tipoDeEquipamento = eventData.pointerDrag.GetComponent<ItemColetado>().ItemInventario as ArmaduraBase;
+
+                if (tipoDeSlot.TipoDeArmadura == tipoDeEquipamento.TipoDeArmadura)
+                {
+                    base.OnDrop(eventData);
+                }
+            }
+            else
+            {
+                base.OnDrop(eventData);
+            }
         }
     }
 }

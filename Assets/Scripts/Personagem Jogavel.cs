@@ -13,7 +13,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     public UIInventario Inventario { get { return UIDeInventario; } }
     public float VidaAtual { get { return vidaAtual; } set { vidaAtual = Mathf.Clamp(vidaAtual + value, 0, vidaMaximaTotal); } }
     public float VidaMaxima { get { return vidaMaximaTotal; } }
-    public float VidaMaximaBase { get { return VidaMaximaBase; } }
+    public float VidaMaximaBase { get { return vidaMaximaBase; } }
     public float ExpAtual { get { return expAtual; } set { expAtual = value; } }
     public int PontosRestantes { get { return pontosRestantes; } set { pontosRestantes = value; } }
     public int PontosForca { get { return forcaBase; } set { forcaBase = value; } }
@@ -27,6 +27,16 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
     [SerializeField]
     protected ArmaBase armaEquipada;
+    [SerializeField]
+    protected ItemAuxiliar auxiliarEquipado;
+    [SerializeField]
+    protected ArmaduraBase capaceteEquipado;
+    [SerializeField]
+    protected ArmaduraBase peitoralEquipado;
+    [SerializeField]
+    protected ArmaduraBase calcasEquipado;
+    [SerializeField]
+    protected ArmaduraBase botasEquipado;
 
     [Header("Valores de Movimento")]
 
@@ -112,7 +122,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
     #endregion
 
-    #region Start e Input
+    #region Awake e Input
 
     protected virtual void Awake()
     {
@@ -125,6 +135,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
         vidaMaximaTotal = vidaMaximaBase * vitalidadeBase;
         vidaAtual = vidaMaximaTotal;
+        EquiparArma();
     }
 
     protected virtual void OnEnable()
@@ -165,11 +176,18 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
         #region Atributos Totais
 
+        int defesaArmaduras = 0;
+        if (auxiliarEquipado != null) defesaArmaduras += auxiliarEquipado.Defesa;
+        if (capaceteEquipado != null) defesaArmaduras += capaceteEquipado.Defesa;
+        if (peitoralEquipado != null) defesaArmaduras += peitoralEquipado.Defesa;
+        if (calcasEquipado != null) defesaArmaduras += calcasEquipado.Defesa;
+        if (botasEquipado != null) defesaArmaduras += botasEquipado.Defesa;
+
         forcaTotal = forcaBase;
         destrezaTotal = destrezaBase;
         inteligenciaTotal = inteligenciaBase;
         vitalidadeTotal = vitalidadeBase;
-        resistenciaTotal = resistenciaBase;
+        resistenciaTotal = resistenciaBase + defesaArmaduras;
         agilidadeTotal = agilidadeBase;
 
         #endregion
@@ -185,7 +203,6 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
         #endregion
 
-        EquiparArma();
         expProximoNivel = 25 * Mathf.Pow(1.3f, Mathf.Clamp(nivelAtual - 2, 0, nivelAtual));
         expProximoNivel -= expProximoNivel % 0.01f; // Remover decimais depois do segundo (Ex: 12,57 ao invés de 12,5795483)
 
@@ -198,6 +215,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         }
 
         noChao = ChecagemChao(); // Raycasts dependem da física do Unity, que só é processada a cada FixedUpdate.
+        EquiparArma();
 
         rb.gravityScale = gravidade;
 
@@ -397,7 +415,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         this.enabled = false;
     }
 
-    private void EquiparArma()
+    public void EquiparArma()
     {
         for (int i = 0; i < Inventario.SlotsDeEquipamento.childCount; i++)
         {
@@ -405,10 +423,48 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
             if (slotDeEquipamento.TipoDeSlot != null)
             {
-                if (slotDeEquipamento.TipoDeSlot is ArmaBase)
+                if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaBase)))
                 {
                     if (slotDeEquipamento.ItemNoSlot == null) armaEquipada = null;
                     else armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                }
+                else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaduraBase)) || slotDeEquipamento.TipoDeSlot is ArmaduraBase)
+                {
+                    ArmaduraBase slotDeArmadura = (ArmaduraBase)slotDeEquipamento.TipoDeSlot;
+
+                    switch (slotDeArmadura.TipoDeArmadura)
+                    {
+                        case ArmaduraBase.TipoArmadura.Capacete:
+                            if (slotDeEquipamento.ItemNoSlot == null) capaceteEquipado = null;
+                            else capaceteEquipado = (ArmaduraBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                            break;
+                        case ArmaduraBase.TipoArmadura.Peitoral:
+                            if (slotDeEquipamento.ItemNoSlot == null) peitoralEquipado = null;
+                            else peitoralEquipado = (ArmaduraBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                            break;
+                        case ArmaduraBase.TipoArmadura.Calcas:
+                            if (slotDeEquipamento.ItemNoSlot == null) calcasEquipado = null;
+                            else calcasEquipado = (ArmaduraBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                            break;
+                        case ArmaduraBase.TipoArmadura.Botas:
+                            if (slotDeEquipamento.ItemNoSlot == null) botasEquipado = null;
+                            else botasEquipado = (ArmaduraBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                            break;
+                    }
+                }
+                else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ItemAuxiliar)) || slotDeEquipamento.TipoDeSlot is ItemAuxiliar)
+                {
+                    if (slotDeEquipamento.ItemNoSlot == null) auxiliarEquipado = null;
+                    else auxiliarEquipado = (ItemAuxiliar)slotDeEquipamento.ItemNoSlot.ItemInventario;
+
+                    if (armaEquipada != null)
+                    {
+                        if (armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged)))
+                        {
+                            ArmaRanged ranged = armaEquipada as ArmaRanged;
+                            ranged.Municao = auxiliarEquipado;
+                        }
+                    }
                 }
             }
         }

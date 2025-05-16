@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,10 +132,16 @@ public class UIInventario : MonoBehaviour
     {
         if (jogador.PontosRestantes > 0)
         {
-            jogador.PontosVitalidade += 1;
-            jogador.VidaAtual += jogador.VidaMaximaBase;
-            jogador.PontosRestantes -= 1;
+            StartCoroutine(AdicionarVidaMaxima());
         }
+    }
+
+    private IEnumerator AdicionarVidaMaxima()
+    {
+        jogador.PontosVitalidade += 1;
+        yield return new WaitForFixedUpdate();
+        jogador.VidaAtual += jogador.VidaMaximaBase;
+        jogador.PontosRestantes -= 1;
     }
 
     public void AdicionarResistencia()

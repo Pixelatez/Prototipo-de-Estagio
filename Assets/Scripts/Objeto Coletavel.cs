@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjetoColetavel : MonoBehaviour
@@ -32,7 +31,11 @@ public class ObjetoColetavel : MonoBehaviour
 
     private void Update()
     {
-        sRenderer.sprite = item.SpriteItem;
+        if (item.SpriteItem != null)
+        {
+            if (item.SpriteDropado == null) sRenderer.sprite = item.SpriteItem;
+            else sRenderer.sprite = item.SpriteDropado;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D colisor)

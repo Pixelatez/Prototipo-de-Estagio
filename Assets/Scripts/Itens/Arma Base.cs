@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Arma Base", menuName = "Scriptable Objects/Arma Base")]
 public class ArmaBase : ItemBase
 {
     public TipoDeDano TipoDeAtaque { get { return tipoDeAtaque; } }
