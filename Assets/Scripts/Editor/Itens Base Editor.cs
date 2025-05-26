@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(ItemBase), true)]
-public class ItensInventarioEditor : Editor
+public class ItensBaseEditor : Editor
 {
     public override void OnInspectorGUI()
     {

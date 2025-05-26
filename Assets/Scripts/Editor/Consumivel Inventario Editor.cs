@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(ItemConsumivel))]
-public class ConsumivelInventarioEditor : ItensInventarioEditor
+public class ConsumivelInventarioEditor : ItensBaseEditor
 {
     public override void OnInspectorGUI()
     {

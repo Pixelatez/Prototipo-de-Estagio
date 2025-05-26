@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class InimigoBase : MonoBehaviour, IDamageable
@@ -29,6 +30,11 @@ public class InimigoBase : MonoBehaviour, IDamageable
     [SerializeField]
     protected float gravidade = 3f;
 
+    [Header("Valores de Detecção")]
+
+    [SerializeField]
+    protected float tamanhoAreaDeteccao = 5f;
+
     [Header("Valores de EXP")]
 
     [SerializeField, Tooltip("Valor de EXP entre X e Y que o inimigo dropa ao morrer.")]
@@ -39,10 +45,9 @@ public class InimigoBase : MonoBehaviour, IDamageable
     [SerializeField]
     protected bool modoDebug = false;
     [SerializeField]
-    protected Transform jogador;
-    [SerializeField]
     private GameObject UIDoInimigo;
 
+    protected Transform jogador;
     protected bool morrendo = false;
     protected Rigidbody2D rb;
 
@@ -55,7 +60,7 @@ public class InimigoBase : MonoBehaviour, IDamageable
         UI.GetComponent<UIInimigo>().PersonagemDoInimigo = this;
     }
 
-    protected virtual void Update()
+    protected virtual void FixedUpdate()
     {
         rb.gravityScale = gravidade;
 
@@ -64,6 +69,27 @@ public class InimigoBase : MonoBehaviour, IDamageable
             morrendo = true;
             StartCoroutine(Morrer());
         }
+        else if (morrendo) return;
+
+        jogador = DetectarJogador();
+    }
+
+    private Transform DetectarJogador()
+    {
+        Collider2D[] alvos = Physics2D.OverlapCircleAll(transform.position, tamanhoAreaDeteccao, LayerMask.GetMask("Jogador"));
+
+        if (alvos.Length > 0)
+        {
+            for (int i = 0; i < alvos.Length; i++)
+            {
+                if (alvos[i].TryGetComponent<PersonagemJogavel>(out _))
+                {
+                    return alvos[i].transform;
+                }
+            }
+        }
+
+        return jogador = null;
     }
 
     private IEnumerator Morrer()
@@ -75,5 +101,13 @@ public class InimigoBase : MonoBehaviour, IDamageable
     public void LevarDano(float dano)
     {
         vidaAtual = Mathf.Clamp(vidaAtual - dano, 0, vidaMaxima);
+    }
+
+    protected virtual void OnDrawGizmosSelected()
+    {
+        if (modoDebug)
+        {
+            Handles.DrawWireDisc(transform.position, Vector3.forward, tamanhoAreaDeteccao);
+        }
     }
 }

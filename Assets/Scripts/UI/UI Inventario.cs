@@ -80,6 +80,11 @@ public class UIInventario : MonoBehaviour
 
         #endregion
 
+        AtualizarInventario();
+    }
+
+    public void AtualizarInventario()
+    {
         for (int i = 0; i < numSlotsNoInventario.Length; i++) // Pegar qual item está em qual slot.
         {
             Transform slotAtual = numSlotsNoInventario[i].transform;

@@ -15,6 +15,6 @@ MonoBehaviour:
   itemStackavel: 0
   m_StackMaxima: 1
   spriteItem: {fileID: 21300000, guid: 4292b037f439b74479f83235f0b1c1f8, type: 3}
-  spriteDropado: {fileID: 0}
+  spriteDropado: {fileID: 21300000, guid: 4292b037f439b74479f83235f0b1c1f8, type: 3}
   defesa: 4
   tipoDeArmadura: 1

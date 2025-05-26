@@ -9,11 +9,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
     public Transform ParenteDepoisDeSoltar { get { return parenteDepoisDeSoltar; } set { parenteDepoisDeSoltar = value; } }
     public UIInventario Inventario { get { return inventario; } set { inventario = value; } }
 
-    [Header("Outros")]
-
-    [SerializeField]
     private UIInventario inventario;
-
     private Image imagem;
     private TextMeshProUGUI texto;
     private Transform parenteDepoisDeSoltar;
@@ -26,7 +22,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
         set
         {
             if (item == null) m_Quantidade = 1;
-            else m_Quantidade = Mathf.Clamp(value, 1, item.StackMaxima);
+            else m_Quantidade = Mathf.Clamp(value, 0, item.StackMaxima);
         }
     }
 
@@ -39,6 +35,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
     private void Update()
     {
         imagem.sprite = item.SpriteItem;
+        if (Quantidade <= 0) Destroy(gameObject);
         if (item.itemStackavel) texto.text = Quantidade.ToString();
         else texto.text = string.Empty;
     }
@@ -82,8 +79,7 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
                     break;
             }
 
-            if (!itemConsumivel.itemStackavel || (itemConsumivel.itemStackavel && Quantidade <= 1)) Destroy(gameObject);
-            else Quantidade--;
+            Quantidade--;
         }
     }
 }

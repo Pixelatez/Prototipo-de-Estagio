@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using Unity.VisualScripting;
+using Unity.Burst.Intrinsics;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,8 +24,9 @@ public class InimigoTerrestreMelee : InimigoBase
 
     private Transform espada;
     protected Vector3 posicaoHitboxReal;
+    protected Vector3 direcaoJogador;
+    private Vector3 rotacaoForaDoAlcance = Vector3.zero;
     protected bool emCooldown = false;
-    protected float direcaoJogador;
 
     protected override void Awake()
     {
@@ -32,47 +34,39 @@ public class InimigoTerrestreMelee : InimigoBase
         espada = transform.GetChild(0);
     }
 
-    protected void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        if (morrendo) return;
-        direcaoJogador = Mathf.Sign(jogador.position.x - transform.position.x);
+        base.FixedUpdate();
 
-        if (direcaoJogador >= 0)
+        if (jogador != null)
         {
-            posicaoHitboxReal = new Vector3(posicaoHitbox.x + larguraHitbox / 2, posicaoHitbox.y);
-            espada.localPosition = new(1f, 0.25f, 0);
-        }
-        else
-        {
-            posicaoHitboxReal = new Vector3(-posicaoHitbox.x - larguraHitbox / 2, posicaoHitbox.y);
-            espada.localPosition = new(-1f, 0.25f, 0);
-        }
-
-        Vector2 tamanhoHitbox = new(larguraHitbox / 2, alturaHitbox / 2);
-        Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, 0);
-
-        if (alvos.Length > 0)
-        {
-            for (int i = 0; i < alvos.Length; i++)
+            // Movimento
+            float direcaoJogadorHori = Mathf.Sign(jogador.position.x - transform.position.x);
+            if (Mathf.Abs(jogador.position.x - transform.position.x) > 2f)
             {
-                if (alvos[i].TryGetComponent<IDamageable>(out IDamageable alvo) && alvos[i].gameObject.layer == 3)
-                {
-                    if (!emCooldown)
-                    {
-                        alvo.LevarDano(dano);
-                        StartCoroutine(Cooldown());
-                    }
-                }
-                else
-                {
-                    rb.linearVelocityX = velocidade * direcaoJogador;
-                }
+                rb.linearVelocityX = velocidade * direcaoJogadorHori;
             }
+
+            // Orientação
+            direcaoJogador = (jogador.position - transform.position).normalized;
+            espada.rotation = Quaternion.LookRotation(Vector3.forward, direcaoJogador) * Quaternion.Euler(0f, 0f, 90f);
+
+            // Sprites
+            bool inverter = direcaoJogadorHori != 1;
+            GetComponent<SpriteRenderer>().flipX = inverter;
+            espada.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
+            rotacaoForaDoAlcance = inverter ? new(0f, 0f, 180f) : rotacaoForaDoAlcance = Vector3.zero;
+
         }
         else
         {
-            rb.linearVelocityX = velocidade * direcaoJogador;
+            espada.rotation = Quaternion.Euler(rotacaoForaDoAlcance);
         }
+    }
+
+    protected void Ataque()
+    {
+
     }
 
     private IEnumerator Cooldown()
@@ -82,29 +76,13 @@ public class InimigoTerrestreMelee : InimigoBase
         emCooldown = false;
     }
 
-    private void OnDrawGizmos()
+    protected override void OnDrawGizmosSelected()
     {
+        base.OnDrawGizmosSelected();
+
         if (modoDebug)
         {
-            Vector3 posicaoHitboxGizmos;
-
-            if (direcaoJogador >= 0) { posicaoHitboxGizmos = new Vector3(posicaoHitbox.x + larguraHitbox / 2, posicaoHitbox.y); }
-            else { posicaoHitboxGizmos = new Vector3(-posicaoHitbox.x - larguraHitbox / 2, posicaoHitbox.y); }
-
-            Vector3[] quadradoVertices = new Vector3[4];
-
-            for (int i = 0; i < 4; i++)
-            {
-                int l = -1;
-                int a = -1;
-
-                if (i >= 2) { a = 1; }
-                if (i % 3 == 0) { l = 1; }
-
-                quadradoVertices[i] = transform.position + posicaoHitboxGizmos + new Vector3((larguraHitbox / 2) * l, (alturaHitbox / 2) * a);
-            }
-
-            Handles.DrawSolidRectangleWithOutline(quadradoVertices, new Color(1, 0, 0, 0.3f), Color.red);
+            
         }
     }
 }

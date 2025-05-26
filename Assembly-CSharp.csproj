@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Itens\Item Consumivel.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inimigo.cs" />
     <Compile Include="Assets\Scripts\Main Manager Behavior.cs" />
+    <Compile Include="Assets\Scripts\Coletar Itens.cs" />
     <Compile Include="Assets\Scripts\Area Vitoria.cs" />
     <Compile Include="Assets\Scripts\Camera Behavior.cs" />
     <Compile Include="Assets\Scripts\Inimigo Terrestre Melee.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Assets\Scripts\Inimigo Base.cs" />
     <Compile Include="Assets\Scripts\Itens\Arma Ranged.cs" />
     <Compile Include="Assets\Scripts\UI\UI Objetivo.cs" />
+    <Compile Include="Assets\Scripts\Projetel Behavior.cs" />
     <Compile Include="Assets\Scripts\Itens\Item Base.cs" />
     <Compile Include="Assets\Scripts\Itens\Arma Base.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />

@@ -174,6 +174,8 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         }
         else if (morto) return;
 
+        rb.gravityScale = gravidade;
+
         #region Atributos Totais
 
         int defesaArmaduras = 0;
@@ -203,6 +205,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
         #endregion
 
+        // Upar de Nível:
         expProximoNivel = 25 * Mathf.Pow(1.3f, Mathf.Clamp(nivelAtual - 2, 0, nivelAtual));
         expProximoNivel -= expProximoNivel % 0.01f; // Remover decimais depois do segundo (Ex: 12,57 ao invés de 12,5795483)
 
@@ -214,20 +217,25 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
             pontosRestantes += pontosPorNivel;
         }
 
+        // Checagens de Chão e Equipamento
         noChao = ChecagemChao(); // Raycasts dependem da física do Unity, que só é processada a cada FixedUpdate.
         EquiparArma();
 
-        rb.gravityScale = gravidade;
-
-        Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>(); // Pegar input do mouse se o jogo estiver em foco.
-
+        // Orientação
         Vector2 posicaoMouse = Camera.main.ScreenToWorldPoint(posicaoMouseRaw); // Traduzir a posição do mouse na tela para o jogo.
-        direcaoMouse = (transform.position - (Vector3)posicaoMouse); // Pegar direção do mouse em relação ao jogador.
+        direcaoMouse = transform.position - (Vector3)posicaoMouse; // Pegar direção do jogador em relação ao mouse.
         arma.rotation = Quaternion.LookRotation(Vector3.forward, direcaoMouse.normalized) * Quaternion.Euler(0, 0, -90);
         arma.GetChild(0).transform.localPosition = posiHitboxPunhos;
 
-        // Se não tiver input do jogador, o jogador para de se mover.
-        if (inputMovimento.magnitude == 0)
+        // Inverter o sprite dependendo na direção do mouse
+        bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) != 1;
+        GetComponent<SpriteRenderer>().flipX = inverter;
+        arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
+
+        // Movimentação
+        Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>();
+
+        if (inputMovimento.magnitude == 0) // Se não tiver input do jogador, o jogador para de se mover.
         {
             rb.linearVelocityX = 0;
         }
@@ -235,11 +243,6 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         {
             rb.linearVelocityX = inputMovimento.x * velocidadeTotal;
         }
-
-        // Inverter o sprite dependendo de onde olhar.
-        bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) != 1;
-        GetComponent<SpriteRenderer>().flipX = inverter;
-        arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
 
         if (noChao && coyoteTimeExpirado) coyoteTimeExpirado = false; // Resetar coyote time para poder acontecer outra vez
 
@@ -423,10 +426,24 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
             if (slotDeEquipamento.TipoDeSlot != null)
             {
-                if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaBase)))
+                if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaBase)) || slotDeEquipamento.TipoDeSlot is ArmaBase)
                 {
                     if (slotDeEquipamento.ItemNoSlot == null) armaEquipada = null;
-                    else armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                    else
+                    {
+                        armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+
+                        if (auxiliarEquipado != null)
+                        {
+                            bool subclasse = armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged));
+                            bool mesmaClasse = armaEquipada is ArmaRanged;
+                            if ((mesmaClasse || subclasse) && auxiliarEquipado.TipoDeAuxiliar == ItemAuxiliar.TipoAuxiliar.Municao)
+                            {
+                                ArmaRanged ranged = armaEquipada as ArmaRanged;
+                                ranged.Municao = slotDeEquipamento.ItemNoSlot;
+                            }
+                        }
+                    }
                 }
                 else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaduraBase)) || slotDeEquipamento.TipoDeSlot is ArmaduraBase)
                 {
@@ -455,14 +472,19 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                 else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ItemAuxiliar)) || slotDeEquipamento.TipoDeSlot is ItemAuxiliar)
                 {
                     if (slotDeEquipamento.ItemNoSlot == null) auxiliarEquipado = null;
-                    else auxiliarEquipado = (ItemAuxiliar)slotDeEquipamento.ItemNoSlot.ItemInventario;
-
-                    if (armaEquipada != null)
+                    else
                     {
-                        if (armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged)))
+                        auxiliarEquipado = (ItemAuxiliar)slotDeEquipamento.ItemNoSlot.ItemInventario;
+
+                        if (armaEquipada != null)
                         {
-                            ArmaRanged ranged = armaEquipada as ArmaRanged;
-                            ranged.Municao = auxiliarEquipado;
+                            bool subclasse = armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged));
+                            bool mesmaClasse = armaEquipada is ArmaRanged;
+                            if ((mesmaClasse || subclasse) && auxiliarEquipado.TipoDeAuxiliar == ItemAuxiliar.TipoAuxiliar.Municao)
+                            {
+                                ArmaRanged ranged = armaEquipada as ArmaRanged;
+                                ranged.Municao = slotDeEquipamento.ItemNoSlot;
+                            }
                         }
                     }
                 }
@@ -515,7 +537,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
                 Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);
             }
-            else
+            else if (armaEquipada == null)
             {
                 posicaoHitboxGizmos = new Vector3(posiHitboxPunhos.x + larguraHitboxPunhos / 2, posiHitboxPunhos.y);
 

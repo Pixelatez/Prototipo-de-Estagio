@@ -22,7 +22,7 @@ public class ArmaBase : ItemBase
     protected float knockback;
 
     [Tooltip("Textura da arma nas mãos do jogador.")]
-    public Texture2D texturaEquipado;
+    public Sprite texturaEquipado;
 
     [Tooltip("Animação da arma ao atacar.")]
     public AnimationClip animacaoDeAtaque;
