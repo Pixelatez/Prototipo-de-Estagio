@@ -148,5 +148,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
-  itemNoInventario: {fileID: 2583807670463269579, guid: c29d90b929f9c71469248f94a478a56c, type: 3}
   m_Quantidade: 58

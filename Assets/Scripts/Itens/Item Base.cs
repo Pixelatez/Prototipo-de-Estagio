@@ -15,6 +15,8 @@ public class ItemBase : ScriptableObject
         set { m_StackMaxima = Mathf.Clamp(value, 1, value); }
     }
 
+    [Header("Sprites de Item")]
+
     [SerializeField, Tooltip("Textura do item no inventário.")]
     protected Sprite spriteItem;
 

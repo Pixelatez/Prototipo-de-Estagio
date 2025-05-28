@@ -16,11 +16,11 @@ public class ArmaRanged : ArmaBase
 
     private ItemColetado municao;
 
-    public override void Ataque(float danoAtributos, PersonagemJogavel jogador, Vector3 direcaoAtaque)
+    public override void Ataque(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
     {
         if (municao != null)
         {
-            GameObject projetel = Instantiate(projetelPrefab.gameObject, jogador.transform.position, Quaternion.Euler(direcaoAtaque), jogador.transform);
+            GameObject projetel = Instantiate(projetelPrefab.gameObject, atacante.position, Quaternion.Euler(direcaoAtaque), atacante);
             ProjetelBehavior projetelScript = projetel.GetComponent<ProjetelBehavior>();
             ItemAuxiliar tipoProjetel = (ItemAuxiliar)municao.ItemInventario;
             projetelScript.Sprite = tipoProjetel.SpriteProjetel;
@@ -29,6 +29,12 @@ public class ArmaRanged : ArmaBase
             projetelScript.Gravidade = tipoProjetel.Gravidade;
             projetelScript.Alvos = tipoProjetel.Alvos;
             projetelScript.enabled = true;
+
+            if (atacante.TryGetComponent<PersonagemJogavel>(out PersonagemJogavel jogador))
+            {
+                projetelScript.Jogador = jogador;
+            }
+
             projetel.transform.GetComponent<Rigidbody2D>().AddForce(projetel.transform.right * tipoProjetel.VelocidadeProjetel, ForceMode2D.Impulse);
 
             if (usaMunicao) municao.Quantidade -= municaoPorUso;

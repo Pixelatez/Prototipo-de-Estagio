@@ -5,6 +5,7 @@ public class ArmaBase : ItemBase
 {
     public TipoDeDano TipoDeAtaque { get { return tipoDeAtaque; } }
     public float CooldownDeAtaque { get { return cooldownDeAtaque; } }
+    public Sprite SpriteEquipado { get {  return spriteEquipado; } }
     public float Knockback { get { return knockback; } }
 
     [Header("Valores de Arma")]
@@ -21,13 +22,13 @@ public class ArmaBase : ItemBase
     [SerializeField]
     protected float knockback;
 
-    [Tooltip("Textura da arma nas mãos do jogador.")]
-    public Sprite texturaEquipado;
+    [SerializeField, Tooltip("Textura da arma nas mãos do jogador.")]
+    protected Sprite spriteEquipado;
 
     [Tooltip("Animação da arma ao atacar.")]
     public AnimationClip animacaoDeAtaque;
 
-    public virtual void Ataque(float danoAtributos, PersonagemJogavel jogador, Vector3 direcaoAtaque)
+    public virtual void Ataque(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
     {
 
     }

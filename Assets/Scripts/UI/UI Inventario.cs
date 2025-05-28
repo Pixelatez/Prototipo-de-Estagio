@@ -144,9 +144,9 @@ public class UIInventario : MonoBehaviour
     private IEnumerator AdicionarVidaMaxima()
     {
         jogador.PontosVitalidade += 1;
-        yield return new WaitForFixedUpdate();
-        jogador.VidaAtual += jogador.VidaMaximaBase;
         jogador.PontosRestantes -= 1;
+        yield return new WaitForFixedUpdate();
+        jogador.VidaAtual = jogador.VidaMaximaBase;
     }
 
     public void AdicionarResistencia()

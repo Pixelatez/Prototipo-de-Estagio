@@ -4,8 +4,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEditor;
-using Unity.VisualScripting;
-using System;
 
 public class PersonagemJogavel : MonoBehaviour, IDamageable
 {
@@ -99,13 +97,12 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     [SerializeField]
     protected UIDerrota UIDeDerrota;
     [SerializeField]
-    protected Transform arma;
-    [SerializeField]
     protected bool modoDebug = false;
 
     protected InputJogador input;
     protected Collider2D colisor;
     protected Rigidbody2D rb;
+    protected Transform arma;
     protected Vector3 direcaoMouse;
     protected Vector2 posicaoMouseRaw = Vector2.zero;
     protected bool noChao, emPulo = false, emCoyoteTime = false, coyoteTimeExpirado = false, inventarioAberto = false, morto = false;
@@ -128,6 +125,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     {
         colisor = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
+        arma = transform.GetChild(0);
 
         UIDeInventario.transform.GetChild(0).gameObject.SetActive(inventarioAberto);
         UIDeInventario.Jogador = this;
@@ -230,7 +228,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
         // Inverter o sprite dependendo na direção do mouse
         bool inverter = Mathf.Sign(transform.position.x - posicaoMouse.x) != 1;
         GetComponent<SpriteRenderer>().flipX = inverter;
-        arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
+        arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = !inverter;
 
         // Movimentação
         Vector2 inputMovimento = input.Movimento.Andar.ReadValue<Vector2>();
@@ -332,7 +330,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                             break;
                     }
 
-                    armaEquipada.Ataque(danoAtributos, this, arma.eulerAngles);
+                    armaEquipada.Ataque(danoAtributos, transform, arma.eulerAngles, 1 << 7);
                 }
                 else
                 {
@@ -341,7 +339,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                     Vector2 tamanhoHitbox = new(larguraHitboxPunhos, alturaHitboxPunhos);
                     float danoCausado = danoMeleeTotal + danoPunhos;
 
-                    Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, arma.eulerAngles.z, 7);
+                    Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posicaoHitboxReal, tamanhoHitbox, arma.eulerAngles.z, 1 << 7);
 
                     for (int i = 0; i < alvos.Length; i++)
                     {
@@ -408,7 +406,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     public void LevarDano(float dano)
     {
         // Diminuir dano recebido pela resistência total do jogador, até o minimo de 1 de dano.
-        VidaAtual = -Mathf.Clamp(dano + Mathf.Clamp(dano - resistenciaTotal * defesaBase, 0, dano), 1, dano);
+        VidaAtual = -Mathf.Clamp(dano - resistenciaTotal * defesaBase, 1, dano);
     }
 
     private void Morte()
@@ -428,10 +426,15 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
             {
                 if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaBase)) || slotDeEquipamento.TipoDeSlot is ArmaBase)
                 {
-                    if (slotDeEquipamento.ItemNoSlot == null) armaEquipada = null;
+                    if (slotDeEquipamento.ItemNoSlot == null)
+                    {
+                        armaEquipada = null;
+                        arma.GetChild(0).GetComponent<SpriteRenderer>().sprite = null;
+                    }
                     else
                     {
                         armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
+                        arma.GetChild(0).GetComponent<SpriteRenderer>().sprite = armaEquipada.SpriteEquipado;
 
                         if (auxiliarEquipado != null)
                         {
@@ -496,6 +499,9 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     {
         if (modoDebug)
         {
+            if (transform.childCount > 0) arma = transform.GetChild(0);
+            else return;
+
             colisor = GetComponent<Collider2D>();
             Vector3 parteInferior = new(transform.position.x, colisor.bounds.min.y - distanciaChao / 2);
             Vector3 tamanho = new(Mathf.Abs(colisor.bounds.min.x - colisor.bounds.max.x), distanciaChao);
@@ -551,8 +557,8 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                     if (i >= 2) { a = 1; }
                     if (i % 3 == 0) { l = 1; }
 
-                    Vector3 teste = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * (posicaoHitboxGizmos + new Vector3((larguraHitboxPunhos / 2) * l, (alturaHitboxPunhos / 2) * a));
-                    quadradoVerticesMelee[i] = transform.position + teste;
+                    Vector3 offset = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * (posicaoHitboxGizmos + new Vector3((larguraHitboxPunhos / 2) * l, (alturaHitboxPunhos / 2) * a));
+                    quadradoVerticesMelee[i] = transform.position + offset;
                 }
 
                 Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);

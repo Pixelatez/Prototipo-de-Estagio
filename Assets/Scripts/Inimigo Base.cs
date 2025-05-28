@@ -1,10 +1,11 @@
 using System.Collections;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEditor;
 using UnityEngine;
 
 public class InimigoBase : MonoBehaviour, IDamageable
 {
-    public float VidaAtual { get { return vidaAtual; } }
+    public float VidaAtual { get { return vidaAtual; } set { vidaAtual = Mathf.Clamp(vidaAtual + value, 0, vidaMaxima); } }
     public float VidaMaxima { get { return vidaMaxima; } }
     public float EXPDrop
     {
@@ -34,6 +35,10 @@ public class InimigoBase : MonoBehaviour, IDamageable
 
     [SerializeField]
     protected float tamanhoAreaDeteccao = 5f;
+    [SerializeField, Range(0, 360)]
+    private float FOVDeVisao = 30f;
+    [SerializeField, Range(0, 15)]
+    private int raycasts = 5;
 
     [Header("Valores de EXP")]
 
@@ -47,9 +52,10 @@ public class InimigoBase : MonoBehaviour, IDamageable
     [SerializeField]
     private GameObject UIDoInimigo;
 
+    protected Rigidbody2D rb;
     protected Transform jogador;
     protected bool morrendo = false;
-    protected Rigidbody2D rb;
+    protected bool debug = false;
 
     protected virtual void Awake()
     {
@@ -64,6 +70,9 @@ public class InimigoBase : MonoBehaviour, IDamageable
     {
         rb.gravityScale = gravidade;
 
+        if (Selection.Contains(gameObject) && modoDebug) debug = true;
+        else debug = false;
+
         if (vidaAtual <= 0 && !morrendo)
         {
             morrendo = true;
@@ -77,6 +86,7 @@ public class InimigoBase : MonoBehaviour, IDamageable
     private Transform DetectarJogador()
     {
         Collider2D[] alvos = Physics2D.OverlapCircleAll(transform.position, tamanhoAreaDeteccao, LayerMask.GetMask("Jogador"));
+        Transform alvo = null;
 
         if (alvos.Length > 0)
         {
@@ -84,12 +94,36 @@ public class InimigoBase : MonoBehaviour, IDamageable
             {
                 if (alvos[i].TryGetComponent<PersonagemJogavel>(out _))
                 {
-                    return alvos[i].transform;
+                    float FOVAtual = -(FOVDeVisao / 2f);
+                    float aumentoDeAngulo = FOVDeVisao / raycasts;
+
+                    for (int j = 0; j < raycasts; j++)
+                    {
+                        Vector3 direcao = Quaternion.AngleAxis(FOVAtual, Vector3.forward) * (alvos[i].transform.position - transform.position);
+                        RaycastHit2D hit;
+                        LayerMask jogador = 1 << 3;
+                        LayerMask obstaculos = 1 << 6;
+
+                        if (hit = Physics2D.Raycast(transform.position, direcao.normalized, tamanhoAreaDeteccao, jogador | obstaculos))
+                        {
+                            if (hit.transform == alvos[i].transform)
+                            {
+                                alvo = alvos[i].transform;
+                                if (debug) Debug.DrawRay(transform.position, hit.point - (Vector2)transform.position, Color.green);
+                            }
+                            else
+                            {
+                                if (debug) Debug.DrawRay(transform.position, hit.point - (Vector2)transform.position, Color.red);
+                            }
+                        }
+
+                        FOVAtual += aumentoDeAngulo;  
+                    }
                 }
             }
         }
 
-        return jogador = null;
+        return alvo;
     }
 
     private IEnumerator Morrer()
@@ -100,7 +134,7 @@ public class InimigoBase : MonoBehaviour, IDamageable
 
     public void LevarDano(float dano)
     {
-        vidaAtual = Mathf.Clamp(vidaAtual - dano, 0, vidaMaxima);
+        VidaAtual = -dano;
     }
 
     protected virtual void OnDrawGizmosSelected()

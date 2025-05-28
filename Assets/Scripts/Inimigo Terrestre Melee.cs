@@ -9,64 +9,96 @@ public class InimigoTerrestreMelee : InimigoBase
     [Header("Valores de Combate")]
 
     [SerializeField]
-    protected float dano = 20f;
+    protected float dano = 15f;
     [SerializeField, Tooltip("Tempo de espera entre ataques em segundos.")]
     protected float cooldownDeAtaque = 1f;
-
-    [Header("Valores de Hitbox")]
-
     [SerializeField]
-    private Vector3 posicaoHitbox;
-    [SerializeField]
-    protected float alturaHitbox;
-    [SerializeField]
-    protected float larguraHitbox;
+    protected ArmaMelee armaEquipada;
 
-    private Transform espada;
+    protected Transform arma;
     protected Vector3 posicaoHitboxReal;
     protected Vector3 direcaoJogador;
     private Vector3 rotacaoForaDoAlcance = Vector3.zero;
     protected bool emCooldown = false;
+    private bool erro = false;
+    protected bool jogadorAlcanceDeAtaque = false;
 
     protected override void Awake()
     {
         base.Awake();
-        espada = transform.GetChild(0);
+        arma = transform.GetChild(0);
+        arma.GetChild(0).GetComponent<SpriteRenderer>().sprite = armaEquipada.SpriteEquipado;
     }
 
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
 
+        if (armaEquipada == null && !erro)
+        {
+            Debug.LogError("Inimigo " + gameObject.name + " não contem uma Arma Melee!");
+            erro = true;
+            return;
+        }
+        else if (erro) return;
+
         if (jogador != null)
         {
-            // Movimento
+            jogadorAlcanceDeAtaque = ChecarAtaque();
+
+            // Movimento e Ataque:
             float direcaoJogadorHori = Mathf.Sign(jogador.position.x - transform.position.x);
-            if (Mathf.Abs(jogador.position.x - transform.position.x) > 2f)
+            if (!jogadorAlcanceDeAtaque) // Se o jogador não pode ser atacado, se mover em sua direção.
             {
-                rb.linearVelocityX = velocidade * direcaoJogadorHori;
+                if (Mathf.Abs(jogador.position.x - transform.position.x) > 2f)
+                {
+                    rb.linearVelocityX = velocidade * direcaoJogadorHori;
+                }
+            }
+            else if (!emCooldown) // Se o jogador pode ser atacado e não estiver em cooldown de ataque.
+            {
+                armaEquipada.Ataque(dano, transform, arma.eulerAngles, 1 << 3);
+                StartCoroutine(Cooldown());
             }
 
             // Orientação
             direcaoJogador = (jogador.position - transform.position).normalized;
-            espada.rotation = Quaternion.LookRotation(Vector3.forward, direcaoJogador) * Quaternion.Euler(0f, 0f, 90f);
+            arma.rotation = Quaternion.LookRotation(Vector3.forward, direcaoJogador) * Quaternion.Euler(0f, 0f, 90f);
 
             // Sprites
             bool inverter = direcaoJogadorHori != 1;
             GetComponent<SpriteRenderer>().flipX = inverter;
-            espada.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
+            arma.GetChild(0).GetComponent<SpriteRenderer>().flipY = inverter;
+            arma.GetChild(0).GetComponent<SpriteRenderer>().flipX = inverter;
             rotacaoForaDoAlcance = inverter ? new(0f, 0f, 180f) : rotacaoForaDoAlcance = Vector3.zero;
-
         }
         else
         {
-            espada.rotation = Quaternion.Euler(rotacaoForaDoAlcance);
+            arma.rotation = Quaternion.Euler(rotacaoForaDoAlcance);
         }
     }
 
-    protected void Ataque()
+    protected bool ChecarAtaque()
     {
+        Vector3 posicaoHitbox = armaEquipada.PosicaoHitbox;
+        float larguraHitbox = armaEquipada.LarguraHitbox;
+        float alturaHitbox = armaEquipada.AlturaHitbox;
 
+        Vector3 posiHitboxReal = new(posicaoHitbox.x + larguraHitbox / 2, posicaoHitbox.y);
+        posiHitboxReal = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * posiHitboxReal;
+        Vector3 tamanhoHitbox = new(larguraHitbox, alturaHitbox);
+
+        Collider2D[] alvos = Physics2D.OverlapBoxAll(transform.position + posiHitboxReal, tamanhoHitbox, arma.eulerAngles.z, 1 << 3);
+
+        for (int i = 0; i < alvos.Length; i++)
+        {
+            if (alvos[i].TryGetComponent<IDamageable>(out IDamageable alvo))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private IEnumerator Cooldown()
@@ -80,9 +112,30 @@ public class InimigoTerrestreMelee : InimigoBase
     {
         base.OnDrawGizmosSelected();
 
-        if (modoDebug)
+        if (modoDebug && armaEquipada != null && transform.childCount > 0)
         {
-            
+            arma = transform.GetChild(0);
+
+            Vector3 posicaoHitbox = armaEquipada.PosicaoHitbox;
+            float larguraHitbox = armaEquipada.LarguraHitbox;
+            float alturaHitbox = armaEquipada.AlturaHitbox;
+
+            Vector3 posicaoHitboxGizmos = new(posicaoHitbox.x + larguraHitbox / 2, posicaoHitbox.y);
+            Vector3[] quadradoVerticesMelee = new Vector3[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                int l = -1;
+                int a = -1;
+
+                if (i >= 2) { a = 1; }
+                if (i % 3 == 0) { l = 1; }
+
+                Vector3 offset = Quaternion.AngleAxis(arma.eulerAngles.z, Vector3.forward) * (posicaoHitboxGizmos + new Vector3((larguraHitbox / 2) * l, (alturaHitbox / 2) * a));
+                quadradoVerticesMelee[i] = transform.position + offset;
+            }
+
+            Handles.DrawSolidRectangleWithOutline(quadradoVerticesMelee, new Color(1, 0, 0, 0.3f), Color.red);
         }
     }
 }

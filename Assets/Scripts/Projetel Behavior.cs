@@ -7,6 +7,10 @@ public class ProjetelBehavior : MonoBehaviour
 {
     private Rigidbody2D rb;
     private SpriteRenderer spriteRend;
+    private PersonagemJogavel m_jogador;
+
+    public PersonagemJogavel Jogador { set { m_jogador = value; } }
+
     private int m_alvos;
 
     public int Alvos { set { m_alvos = value; } }
@@ -47,6 +51,15 @@ public class ProjetelBehavior : MonoBehaviour
     {
         if (colisor.gameObject.layer == m_alvos && colisor.TryGetComponent(out IDamageable alvo))
         {
+            if (m_jogador != null)
+            {
+                InimigoBase inimigo = colisor.GetComponent<InimigoBase>();
+                if (Mathf.Clamp(inimigo.VidaAtual - m_dano, 0, inimigo.VidaMaxima) == 0)
+                {
+                    m_jogador.ExpAtual += inimigo.EXPDrop;
+                }
+            }
+
             alvo.LevarDano(m_dano);
             Destroy(gameObject);
         }

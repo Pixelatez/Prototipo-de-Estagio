@@ -20,7 +20,7 @@ MonoBehaviour:
   dano: 3
   cooldownDeAtaque: 1
   knockback: 0
-  texturaEquipado: {fileID: 0}
+  spriteEquipado: {fileID: 21300000, guid: 30d3517b2e8ed094f80881946473e673, type: 3}
   animacaoDeAtaque: {fileID: 0}
   usaMunicao: 1
   municaoPorUso: 1

@@ -61,6 +61,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.42f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Inimigo Terrestre Ranged.cs" />
     <Compile Include="Assets\Scripts\UI\Item Coletado.cs" />
     <Compile Include="Assets\Scripts\Objeto Coletavel.cs" />
     <Compile Include="Assets\Scripts\UI\UI Inventario.cs" />
