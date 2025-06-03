@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +15,13 @@ public class InimigoBase : MonoBehaviour, IDamageable
             return aleatorio;
         }
     }
+
+    [Header("Valores de Combate")]
+
+    [SerializeField]
+    protected float dano = 15f;
+    [SerializeField, Tooltip("Tempo de espera entre ataques em segundos.")]
+    protected float cooldownDeAtaque = 1f;
 
     [Header("Valores de Vida")]
 
@@ -54,6 +60,7 @@ public class InimigoBase : MonoBehaviour, IDamageable
 
     protected Rigidbody2D rb;
     protected Transform jogador;
+    protected bool emCooldown = false;
     protected bool morrendo = false;
     protected bool debug = false;
 
@@ -130,6 +137,13 @@ public class InimigoBase : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(1f);
         Destroy(gameObject);
+    }
+
+    protected IEnumerator Cooldown()
+    {
+        emCooldown = true;
+        yield return new WaitForSeconds(cooldownDeAtaque);
+        emCooldown = false;
     }
 
     public void LevarDano(float dano)

@@ -5,7 +5,6 @@ public class ItemAuxiliar : ItemBase
 {
     public TipoAuxiliar TipoDeAuxiliar { get { return tipoDeAuxiliar; } }
     public Sprite SpriteProjetel { get { return spriteProjetel; } }
-    public int Alvos { get { return alvos; } }
     public int Defesa { get { return defesa; } }
     public float Dano { get { return dano; } }
     public float VelocidadeProjetel { get { return velocidadeProjetel; } }
@@ -21,9 +20,6 @@ public class ItemAuxiliar : ItemBase
 
     [SerializeField, HideInInspector]
     protected int defesa;
-
-    [SerializeField, HideInInspector]
-    protected int alvos;
 
     [SerializeField, HideInInspector]
     protected float dano;

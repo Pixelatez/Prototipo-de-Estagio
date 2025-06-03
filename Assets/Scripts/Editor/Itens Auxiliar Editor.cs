@@ -23,9 +23,6 @@ public class ItensAuxiliarEditor : ItensBaseEditor
             case ItemAuxiliar.TipoAuxiliar.Municao:
                 EditorGUILayout.LabelField("Valores do Projetel", EditorStyles.boldLabel);
 
-                int alvos = EditorGUILayout.IntField("Layer dos Alvos", meuScript.Alvos);
-                serializedObject.FindProperty("alvos").intValue = alvos;
-
                 float dano = EditorGUILayout.FloatField("Dano", meuScript.Dano);
                 serializedObject.FindProperty("dano").floatValue = dano;
 

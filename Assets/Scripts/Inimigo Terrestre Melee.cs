@@ -1,17 +1,10 @@
-using System;
-using System.Collections;
-using Unity.Burst.Intrinsics;
 using UnityEditor;
 using UnityEngine;
 
 public class InimigoTerrestreMelee : InimigoBase
 {
-    [Header("Valores de Combate")]
+    [Header("Valores de Melee")]
 
-    [SerializeField]
-    protected float dano = 15f;
-    [SerializeField, Tooltip("Tempo de espera entre ataques em segundos.")]
-    protected float cooldownDeAtaque = 1f;
     [SerializeField]
     protected ArmaMelee armaEquipada;
 
@@ -19,7 +12,6 @@ public class InimigoTerrestreMelee : InimigoBase
     protected Vector3 posicaoHitboxReal;
     protected Vector3 direcaoJogador;
     private Vector3 rotacaoForaDoAlcance = Vector3.zero;
-    protected bool emCooldown = false;
     private bool erro = false;
     protected bool jogadorAlcanceDeAtaque = false;
 
@@ -57,7 +49,7 @@ public class InimigoTerrestreMelee : InimigoBase
             }
             else if (!emCooldown) // Se o jogador pode ser atacado e não estiver em cooldown de ataque.
             {
-                armaEquipada.Ataque(dano, transform, arma.eulerAngles, 1 << 3);
+                armaEquipada.AtaqueMelee(dano, transform, arma.eulerAngles, 1 << 3);
                 StartCoroutine(Cooldown());
             }
 
@@ -92,20 +84,13 @@ public class InimigoTerrestreMelee : InimigoBase
 
         for (int i = 0; i < alvos.Length; i++)
         {
-            if (alvos[i].TryGetComponent<IDamageable>(out IDamageable alvo))
+            if (alvos[i].TryGetComponent<IDamageable>(out _))
             {
                 return true;
             }
         }
 
         return false;
-    }
-
-    private IEnumerator Cooldown()
-    {
-        emCooldown = true;
-        yield return new WaitForSeconds(cooldownDeAtaque);
-        emCooldown = false;
     }
 
     protected override void OnDrawGizmosSelected()

@@ -28,7 +28,12 @@ public class ArmaBase : ItemBase
     [Tooltip("Animação da arma ao atacar.")]
     public AnimationClip animacaoDeAtaque;
 
-    public virtual void Ataque(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
+    public virtual void AtaqueMelee(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
+    {
+
+    }
+
+    public virtual void AtaqueRanged(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, int layerAlvo, ItemColetado municao, ItemAuxiliar tipoMunicao)
     {
 
     }

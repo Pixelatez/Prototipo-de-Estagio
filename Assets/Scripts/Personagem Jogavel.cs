@@ -9,6 +9,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 {
     public InputJogador Input { set { input = value; } }
     public UIInventario Inventario { get { return UIDeInventario; } }
+    public Rigidbody2D RigidBody2D { get { return rb; } }
     public float VidaAtual { get { return vidaAtual; } set { vidaAtual = Mathf.Clamp(vidaAtual + value, 0, vidaMaximaTotal); } }
     public float VidaMaxima { get { return vidaMaximaTotal; } }
     public float VidaMaximaBase { get { return vidaMaximaBase; } }
@@ -103,6 +104,7 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
     protected Collider2D colisor;
     protected Rigidbody2D rb;
     protected Transform arma;
+    protected ItemColetado municao;
     protected Vector3 direcaoMouse;
     protected Vector2 posicaoMouseRaw = Vector2.zero;
     protected bool noChao, emPulo = false, emCoyoteTime = false, coyoteTimeExpirado = false, inventarioAberto = false, morto = false;
@@ -330,7 +332,14 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                             break;
                     }
 
-                    armaEquipada.Ataque(danoAtributos, transform, arma.eulerAngles, 1 << 7);
+                    if (armaEquipada is ArmaMelee || armaEquipada.GetType().IsSubclassOf(typeof(ArmaMelee)))
+                    {
+                        armaEquipada.AtaqueMelee(danoAtributos, transform, arma.eulerAngles, 1 << 7);
+                    }
+                    else if (armaEquipada is ArmaRanged || armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged)))
+                    {
+                        armaEquipada.AtaqueRanged(danoAtributos, transform, arma.eulerAngles, 7, municao, auxiliarEquipado);
+                    }
                 }
                 else
                 {
@@ -435,17 +444,6 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                     {
                         armaEquipada = (ArmaBase)slotDeEquipamento.ItemNoSlot.ItemInventario;
                         arma.GetChild(0).GetComponent<SpriteRenderer>().sprite = armaEquipada.SpriteEquipado;
-
-                        if (auxiliarEquipado != null)
-                        {
-                            bool subclasse = armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged));
-                            bool mesmaClasse = armaEquipada is ArmaRanged;
-                            if ((mesmaClasse || subclasse) && auxiliarEquipado.TipoDeAuxiliar == ItemAuxiliar.TipoAuxiliar.Municao)
-                            {
-                                ArmaRanged ranged = armaEquipada as ArmaRanged;
-                                ranged.Municao = slotDeEquipamento.ItemNoSlot;
-                            }
-                        }
                     }
                 }
                 else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ArmaduraBase)) || slotDeEquipamento.TipoDeSlot is ArmaduraBase)
@@ -474,21 +472,15 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
                 }
                 else if (slotDeEquipamento.TipoDeSlot.GetType().IsSubclassOf(typeof(ItemAuxiliar)) || slotDeEquipamento.TipoDeSlot is ItemAuxiliar)
                 {
-                    if (slotDeEquipamento.ItemNoSlot == null) auxiliarEquipado = null;
+                    if (slotDeEquipamento.ItemNoSlot == null)
+                    {
+                        auxiliarEquipado = null;
+                        municao = null;
+                    }
                     else
                     {
                         auxiliarEquipado = (ItemAuxiliar)slotDeEquipamento.ItemNoSlot.ItemInventario;
-
-                        if (armaEquipada != null)
-                        {
-                            bool subclasse = armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged));
-                            bool mesmaClasse = armaEquipada is ArmaRanged;
-                            if ((mesmaClasse || subclasse) && auxiliarEquipado.TipoDeAuxiliar == ItemAuxiliar.TipoAuxiliar.Municao)
-                            {
-                                ArmaRanged ranged = armaEquipada as ArmaRanged;
-                                ranged.Municao = slotDeEquipamento.ItemNoSlot;
-                            }
-                        }
+                        municao = slotDeEquipamento.ItemNoSlot;
                     }
                 }
             }

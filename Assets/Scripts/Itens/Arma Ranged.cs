@@ -3,8 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Arma Ranged", menuName = "Scriptable Objects/Arma Ranged")]
 public class ArmaRanged : ArmaBase
 {
-    public ItemColetado Municao { set { municao = value; } }
-
     [Header("Valores de Arma Ranged")]
 
     [SerializeField]
@@ -14,20 +12,23 @@ public class ArmaRanged : ArmaBase
     [SerializeField]
     protected ProjetelBehavior projetelPrefab;
 
-    private ItemColetado municao;
-
-    public override void Ataque(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
+    public override void AtaqueRanged(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, int layerAlvo, ItemColetado municao, ItemAuxiliar tipoMunicao)
     {
-        if (municao != null)
+        if (tipoMunicao == null && municao != null)
+        {
+            tipoMunicao = (ItemAuxiliar)municao.ItemInventario;
+        }
+        
+        if (tipoMunicao != null)
         {
             GameObject projetel = Instantiate(projetelPrefab.gameObject, atacante.position, Quaternion.Euler(direcaoAtaque), atacante);
             ProjetelBehavior projetelScript = projetel.GetComponent<ProjetelBehavior>();
-            ItemAuxiliar tipoProjetel = (ItemAuxiliar)municao.ItemInventario;
+            ItemAuxiliar tipoProjetel = tipoMunicao;
             projetelScript.Sprite = tipoProjetel.SpriteProjetel;
             projetelScript.Dano = tipoProjetel.Dano + danoAtributos;
             projetelScript.TempoDeVida = tipoProjetel.TempoDeVida;
             projetelScript.Gravidade = tipoProjetel.Gravidade;
-            projetelScript.Alvos = tipoProjetel.Alvos;
+            projetelScript.Alvos = layerAlvo;
             projetelScript.enabled = true;
 
             if (atacante.TryGetComponent<PersonagemJogavel>(out PersonagemJogavel jogador))
@@ -37,7 +38,7 @@ public class ArmaRanged : ArmaBase
 
             projetel.transform.GetComponent<Rigidbody2D>().AddForce(projetel.transform.right * tipoProjetel.VelocidadeProjetel, ForceMode2D.Impulse);
 
-            if (usaMunicao) municao.Quantidade -= municaoPorUso;
+            if (usaMunicao && municao != null) municao.Quantidade -= municaoPorUso;
         }
     }
 }

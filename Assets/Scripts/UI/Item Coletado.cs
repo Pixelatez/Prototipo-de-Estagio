@@ -45,12 +45,6 @@ public class ItemColetado : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
         parenteDepoisDeSoltar = transform.parent;
         transform.SetParent(transform.root);
         imagem.raycastTarget = false;
-
-        if (item.GetType() == typeof(ArmaRanged))
-        { 
-            ArmaRanged ranged = item as ArmaRanged;
-            ranged.Municao = null;
-        }
     }
 
     public void OnDrag(PointerEventData eventData)
