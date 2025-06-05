@@ -22,6 +22,7 @@ public class ArmaRanged : ArmaBase
         if (tipoMunicao != null)
         {
             GameObject projetel = Instantiate(projetelPrefab.gameObject, atacante.position, Quaternion.Euler(direcaoAtaque), atacante);
+            projetel.transform.localScale = new(0.5f, 0.5f, 0.5f);
             ProjetelBehavior projetelScript = projetel.GetComponent<ProjetelBehavior>();
             ItemAuxiliar tipoProjetel = tipoMunicao;
             projetelScript.Sprite = tipoProjetel.SpriteProjetel;
