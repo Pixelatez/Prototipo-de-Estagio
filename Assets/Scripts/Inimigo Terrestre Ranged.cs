@@ -37,40 +37,7 @@ public class InimigoTerrestreRanged : InimigoBase
 
     protected Vector2 CalcularDirecao(Vector2 alvo, Vector2 velocidadeAlvo, float velocidadeProjetel)
     {
-        Vector2 distancia = alvo - (Vector2)transform.position;
-
-        // Desbalanceamento entre a velocidade do jogador e o projétil.
-        float a = Vector2.Dot(velocidadeAlvo, velocidadeAlvo) - velocidadeProjetel * velocidadeProjetel;
-        // Produto escalar entre a distância inicial e a velocidade do jogador.
-        float b = 2 * Vector2.Dot(distancia, velocidadeAlvo);
-        // O quadrado da distância entre o inimigo e o jogador no início.
-        float c = Vector3.Dot(distancia, distancia);
-
-        float discriminante = b * b - 4 * a * c;
-
-        if (discriminante < 0)
-        {
-            return (alvo - (Vector2)transform.position).normalized;
-        }
-
-        float t1 = (-b + Mathf.Sqrt(discriminante)) / (2 * a);
-        float t2 = (-b - Mathf.Sqrt(discriminante)) / (2 * a);
-
-        float t = Mathf.Min(t1, t2);
-        if (t < 0) t = Mathf.Max(t1, t2);   
-        if (t < 0)
-        {
-            return (alvo - (Vector2)transform.position).normalized;
-        }
-
-        // Posição futura do jogador.
-        Vector2 posiFutura = alvo + velocidadeAlvo * t;
-
-        // Compensar pela gravidade.
-        float offsetVertical = 0.5f + municaoEquipada.Gravidade * t * t;
-        posiFutura.y += offsetVertical;
-
-        Vector2 direcao = (posiFutura - (Vector2)transform.position).normalized;
+        Vector2 direcao = alvo - (Vector2)transform.position;
         return direcao; 
     }
 }
