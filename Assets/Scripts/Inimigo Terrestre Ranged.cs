@@ -25,36 +25,33 @@ public class InimigoTerrestreRanged : InimigoBase
 
         if (jogador != null)
         {
-            if (!emCooldown && CalcularDirecao(jogador.position, jogador.GetComponent<Rigidbody2D>().linearVelocity, municaoEquipada.VelocidadeProjetel, out Quaternion direcaoQuat))   
+            if (!emCooldown && CalcularDirecao(jogador.position, jogador.GetComponent<Rigidbody2D>().linearVelocity, municaoEquipada.VelocidadeProjetel, out float angulo))
             {
-                Vector3 direcao = direcaoQuat.eulerAngles;
-                armaEquipada.AtaqueRanged(dano, transform, new Vector3(0, 0, direcao.z), 3, null, municaoEquipada);
+                Vector2 direcao = new Vector2(Mathf.Cos(angulo * Mathf.Deg2Rad), Mathf.Sin(angulo * Mathf.Deg2Rad));
+                armaEquipada.AtaqueRanged(dano, transform, direcao, 3, null, municaoEquipada);
                 StartCoroutine(Cooldown());
             }
         }
     }
 
-    protected bool CalcularDirecao(Vector2 alvo, Vector2 velocidadeAlvo, float velocidadeProjetel, out Quaternion direcaoQuat)
+    protected bool CalcularDirecao(Vector2 alvo, Vector2 velocidadeAlvo, float velocidadeProjetel, out float angulo)
     {
-        direcaoQuat = Quaternion.identity;
+        angulo = 0f;
 
-        Vector2 dir = (Vector2)transform.position - alvo;
-        float absX = Mathf.Abs(dir.x);
-        float grav = municaoEquipada.Gravidade;
+        Vector2 distancia = alvo - (Vector2)transform.position;
+        float gravidade = Mathf.Abs(Physics2D.gravity.y);
+
         float veloQuadrado = velocidadeProjetel * velocidadeProjetel;
+        float raizBaixa = veloQuadrado * veloQuadrado - gravidade * (gravidade * distancia.x * distancia.x + 2 * distancia.y * veloQuadrado);
 
-        float discriminante = veloQuadrado * veloQuadrado - grav * (grav * absX * absX + 2 * dir.y * veloQuadrado);
+        if (raizBaixa < 0) return false;
 
-        if (discriminante < 0) return false; // Alvo fora do alcance.
+        float raiz = Mathf.Sqrt(raizBaixa);
 
-        float raiz = Mathf.Sqrt(discriminante);
+        float tan = (veloQuadrado - raiz) / (gravidade * distancia.x);
+        float anguloRad = Mathf.Atan(tan);
 
-        float angulo = Mathf.Atan((veloQuadrado - raiz) / (grav * absX));
-
-        // Converter ângulo para vetor de direção:
-        Vector2 direcao = new Vector2(Mathf.Cos(angulo) * Mathf.Sign(dir.x), Mathf.Sin(angulo)).normalized;
-
-        direcaoQuat = Quaternion.LookRotation(Vector3.forward, direcao) * Quaternion.Euler(0, 0, -90);
+        angulo = anguloRad * Mathf.Rad2Deg;
         return true; 
     }
 }

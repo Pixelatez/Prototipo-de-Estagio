@@ -21,7 +21,7 @@ public class ArmaRanged : ArmaBase
         
         if (tipoMunicao != null)
         {
-            GameObject projetel = Instantiate(projetelPrefab.gameObject, atacante.position, Quaternion.Euler(direcaoAtaque), atacante);
+            GameObject projetel = Instantiate(projetelPrefab.gameObject, atacante.position, Quaternion.identity, atacante);
             projetel.transform.localScale = new(0.5f, 0.5f, 0.5f);
             ProjetelBehavior projetelScript = projetel.GetComponent<ProjetelBehavior>();
             ItemAuxiliar tipoProjetel = tipoMunicao;
@@ -37,7 +37,7 @@ public class ArmaRanged : ArmaBase
                 projetelScript.Jogador = jogador;
             }
 
-            projetel.transform.GetComponent<Rigidbody2D>().AddForce(projetel.transform.right * tipoProjetel.VelocidadeProjetel, ForceMode2D.Impulse);
+            projetel.transform.GetComponent<Rigidbody2D>().AddForce(direcaoAtaque * tipoProjetel.VelocidadeProjetel, ForceMode2D.Impulse);
 
             if (usaMunicao && municao != null) municao.Quantidade -= municaoPorUso;
         }
