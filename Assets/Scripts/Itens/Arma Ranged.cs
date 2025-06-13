@@ -12,7 +12,7 @@ public class ArmaRanged : ArmaBase
     [SerializeField]
     protected ProjetelBehavior projetelPrefab;
 
-    public override void AtaqueRanged(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, int layerAlvo, ItemColetado municao, ItemAuxiliar tipoMunicao)
+    public virtual void AtaqueRanged(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, int layerAlvo, ItemColetado municao, ItemAuxiliar tipoMunicao)
     {
         if (tipoMunicao == null && municao != null)
         {
@@ -26,7 +26,7 @@ public class ArmaRanged : ArmaBase
             ProjetelBehavior projetelScript = projetel.GetComponent<ProjetelBehavior>();
             ItemAuxiliar tipoProjetel = tipoMunicao;
             projetelScript.Sprite = tipoProjetel.SpriteProjetel;
-            projetelScript.Dano = tipoProjetel.Dano + danoAtributos;
+            projetelScript.Dano = tipoProjetel.Dano + danoAtributos + dano;
             projetelScript.TempoDeVida = tipoProjetel.TempoDeVida;
             projetelScript.Gravidade = tipoProjetel.Gravidade;
             projetelScript.Alvos = layerAlvo;

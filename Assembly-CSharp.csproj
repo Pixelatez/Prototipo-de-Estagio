@@ -74,12 +74,14 @@
     <Compile Include="Assets\Scripts\Coletar Itens.cs" />
     <Compile Include="Assets\Scripts\Area Vitoria.cs" />
     <Compile Include="Assets\Scripts\Camera Behavior.cs" />
+    <Compile Include="Assets\Scripts\Inimigo Terrestre Magico.cs" />
     <Compile Include="Assets\Scripts\Inimigo Terrestre Melee.cs" />
     <Compile Include="Assets\Scripts\UI\GUI Gameplay.cs" />
     <Compile Include="Assets\Scripts\Itens\Item Auxiliar.cs" />
     <Compile Include="Assets\Scripts\Itens\Armadura Base.cs" />
     <Compile Include="Assets\Scripts\UI\Slot Inventario.cs" />
     <Compile Include="Assets\Scripts\UI\UI Derrota.cs" />
+    <Compile Include="Assets\Scripts\Itens\Arma Magica.cs" />
     <Compile Include="Assets\Scripts\Inimigo Base.cs" />
     <Compile Include="Assets\Scripts\Itens\Arma Ranged.cs" />
     <Compile Include="Assets\Scripts\UI\UI Objetivo.cs" />

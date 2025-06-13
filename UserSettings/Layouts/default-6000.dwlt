@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1360
     height: 725
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Project
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 382}
   m_MaxSize: {x: 10000, y: 10000}
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 51
+  controlID: 80
   draggingID: 0
 --- !u!114 &11
 MonoBehaviour:
@@ -1056,9 +1056,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -16.326221, y: 1.7618614, z: -0.10608662}
+    m_Target: {x: -6.7931576, y: 0.430689, z: -0.16588522}
     speed: 2
-    m_Value: {x: -16.326221, y: 1.7618614, z: -0.10608662}
+    m_Value: {x: -6.7931576, y: 0.430689, z: -0.16588522}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1108,9 +1108,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 11.731154
+    m_Target: 17.710976
     speed: 2
-    m_Value: 11.731154
+    m_Value: 17.710976
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1396,10 +1396,10 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 04af0000
-      m_LastClickedID: 44804
-      m_ExpandedIDs: 08fbffff
+      scrollPos: {x: 0, y: 22}
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 08fbffff04af0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1471,7 +1471,7 @@ MonoBehaviour:
     m_SkipHidden: 1
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets/Prefabs/Inimigos
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1481,15 +1481,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 44
   m_LastFolders:
-  - Assets/Scripts
+  - Assets/Prefabs/Inimigos
   m_LastFoldersGridSize: 44
   m_LastProjectPath: C:\Users\Usuario\Documents\GitHub\Prototipo de Estagio\Prototipo-de-Estagio
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 85}
-    m_SelectedIDs: b4b50000
-    m_LastClickedID: 46516
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 26b60000
+    m_LastClickedID: 46630
     m_ExpandedIDs: 00000000b0b50000b2b50000b4b50000ffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1573,7 +1573,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 39}
+    m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 44
   m_SkipHiddenPackages: 1
   m_DirectoriesAreaWidth: 177

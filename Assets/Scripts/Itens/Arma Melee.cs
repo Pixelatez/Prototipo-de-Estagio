@@ -18,7 +18,7 @@ public class ArmaMelee : ArmaBase
     [SerializeField]
     protected float alturaHitbox;
 
-    public override void AtaqueMelee(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
+    public virtual void AtaqueMelee(float danoAtributos, Transform atacante, Vector3 direcaoAtaque, LayerMask tipoDeAlvo)
     {
         Vector3 posiHitboxReal = new(posicaoHitbox.x + larguraHitbox / 2, posicaoHitbox.y);
         posiHitboxReal = Quaternion.AngleAxis(direcaoAtaque.z, Vector3.forward) * posiHitboxReal;

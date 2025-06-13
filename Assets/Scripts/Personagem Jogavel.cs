@@ -334,11 +334,14 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
                     if (armaEquipada is ArmaMelee || armaEquipada.GetType().IsSubclassOf(typeof(ArmaMelee)))
                     {
-                        armaEquipada.AtaqueMelee(danoAtributos, transform, arma.eulerAngles, 1 << 7);
+                        ArmaMelee melee = (ArmaMelee)armaEquipada;
+                        melee.AtaqueMelee(danoAtributos, transform, arma.eulerAngles, 1 << 7);
                     }
                     else if (armaEquipada is ArmaRanged || armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged)))
                     {
-                        armaEquipada.AtaqueRanged(danoAtributos, transform, arma.eulerAngles, 7, municao, auxiliarEquipado);
+                        Vector3 direcao = Quaternion.Euler(0f, 0f, 180f) * direcaoMouse.normalized;
+                        ArmaRanged ranged = (ArmaRanged)armaEquipada;
+                        ranged.AtaqueRanged(danoAtributos, transform, direcao, 7, municao, auxiliarEquipado);
                     }
                 }
                 else
