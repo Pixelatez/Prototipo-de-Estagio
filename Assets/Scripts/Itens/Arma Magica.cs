@@ -23,6 +23,7 @@ public class ArmaMagica : ArmaBase
         projetelScript.Dano = danoAtributos + dano;
         projetelScript.TempoDeVida = tempoDeVida;
         projetelScript.Gravidade = 0f;
+        projetelScript.TipoDeDano = tipoDeDano;
         projetelScript.Alvos = layerAlvo;
         projetelScript.enabled = true;
 

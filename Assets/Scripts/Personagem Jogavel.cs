@@ -317,31 +317,27 @@ public class PersonagemJogavel : MonoBehaviour, IDamageable
 
                 if (armaEquipada != null)
                 {
-                    float danoAtributos = 0;
-
-                    switch (armaEquipada.TipoDeAtaque)
-                    {
-                        case ArmaBase.TipoDeDano.Melee:
-                            danoAtributos = danoMeleeTotal;
-                            break;
-                        case ArmaBase.TipoDeDano.Ranged:
-                            danoAtributos = danoRangedTotal;
-                            break;
-                        case ArmaBase.TipoDeDano.Magico:
-                            danoAtributos = danoMagicoTotal;
-                            break;
-                    }
+                    float danoAtributos;
 
                     if (armaEquipada is ArmaMelee || armaEquipada.GetType().IsSubclassOf(typeof(ArmaMelee)))
                     {
                         ArmaMelee melee = (ArmaMelee)armaEquipada;
+                        danoAtributos = danoMeleeTotal;
                         melee.AtaqueMelee(danoAtributos, transform, arma.eulerAngles, 1 << 7);
                     }
                     else if (armaEquipada is ArmaRanged || armaEquipada.GetType().IsSubclassOf(typeof(ArmaRanged)))
                     {
                         Vector3 direcao = Quaternion.Euler(0f, 0f, 180f) * direcaoMouse.normalized;
                         ArmaRanged ranged = (ArmaRanged)armaEquipada;
+                        danoAtributos = danoRangedTotal;
                         ranged.AtaqueRanged(danoAtributos, transform, direcao, 7, municao, auxiliarEquipado);
+                    }
+                    else if (armaEquipada is ArmaMagica || armaEquipada.GetType().IsSubclassOf(typeof(ArmaMagica)))
+                    {
+                        Vector3 direcao = Quaternion.Euler(0f, 0f, 180f) * direcaoMouse.normalized;
+                        ArmaMagica magico = (ArmaMagica)armaEquipada;
+                        danoAtributos = danoMagicoTotal;
+                        magico.AtaqueMagico(danoAtributos, transform, direcao, 7);
                     }
                 }
                 else

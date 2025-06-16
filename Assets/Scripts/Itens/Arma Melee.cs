@@ -34,6 +34,26 @@ public class ArmaMelee : ArmaBase
                 if (atacante.TryGetComponent<PersonagemJogavel>(out PersonagemJogavel jogador))
                 {
                     InimigoBase inimigo = alvos[i].GetComponent<InimigoBase>();
+                    bool superEfetivo = false;
+
+                    switch (tipoDeDano)
+                    {
+                        case TipoDano.Fogo:
+                            if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Gelo) superEfetivo = true;
+                            break;
+                        case TipoDano.Gelo:
+                            if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Terra) superEfetivo = true;
+                            break;
+                        case TipoDano.Terra:
+                            if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Raio) superEfetivo = true;
+                            break;
+                        case TipoDano.Raio:
+                            if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Fogo) superEfetivo = true;
+                            break;
+                    }
+
+                    danoCausado *= superEfetivo ? 1.5f : 1f;
+
                     if (Mathf.Clamp(inimigo.VidaAtual - danoCausado, 0, inimigo.VidaMaxima) == 0)
                     {
                         jogador.ExpAtual += inimigo.EXPDrop;

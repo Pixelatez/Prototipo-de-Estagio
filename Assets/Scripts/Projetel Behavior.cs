@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using static ArmaBase;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(SpriteRenderer))]
 public class ProjetelBehavior : MonoBehaviour
@@ -29,6 +30,10 @@ public class ProjetelBehavior : MonoBehaviour
 
     public float Gravidade { set { rb.gravityScale = value; } }
 
+    private TipoDano m_tipoDeDano;
+
+    public TipoDano TipoDeDano { set { m_tipoDeDano = value; } }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -54,6 +59,26 @@ public class ProjetelBehavior : MonoBehaviour
             if (m_jogador != null)
             {
                 InimigoBase inimigo = colisor.GetComponent<InimigoBase>();
+                bool superEfetivo = false;
+
+                switch (m_tipoDeDano)
+                {
+                    case TipoDano.Fogo:
+                        if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Gelo) superEfetivo = true;
+                        break;
+                    case TipoDano.Gelo:
+                        if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Terra) superEfetivo = true;
+                        break;
+                    case TipoDano.Terra:
+                        if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Raio) superEfetivo = true;
+                        break;
+                    case TipoDano.Raio:
+                        if (inimigo.TipoDeInimigo == InimigoBase.TipoInimigo.Fogo) superEfetivo = true;
+                        break;
+                }
+
+                m_dano *= superEfetivo ? 1.5f : 1f;
+
                 if (Mathf.Clamp(inimigo.VidaAtual - m_dano, 0, inimigo.VidaMaxima) == 0)
                 {
                     m_jogador.ExpAtual += inimigo.EXPDrop;

@@ -16,7 +16,7 @@ MonoBehaviour:
   m_StackMaxima: 1
   spriteItem: {fileID: 0}
   spriteDropado: {fileID: 0}
-  tipoDeAtaque: 0
+  tipoDeDano: 1
   dano: 5
   cooldownDeAtaque: 1
   knockback: 0

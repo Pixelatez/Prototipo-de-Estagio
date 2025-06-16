@@ -29,6 +29,7 @@ public class ArmaRanged : ArmaBase
             projetelScript.Dano = tipoProjetel.Dano + danoAtributos + dano;
             projetelScript.TempoDeVida = tipoProjetel.TempoDeVida;
             projetelScript.Gravidade = tipoProjetel.Gravidade;
+            projetelScript.TipoDeDano = tipoDeDano;
             projetelScript.Alvos = layerAlvo;
             projetelScript.enabled = true;
 

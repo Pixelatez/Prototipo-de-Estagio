@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Arma Base", menuName = "Scriptable Objects/Arma Base")]
 public class ArmaBase : ItemBase
 {
-    public TipoDeDano TipoDeAtaque { get { return tipoDeAtaque; } }
+    public TipoDano TipoDeDano { get { return tipoDeDano; } }
     public float CooldownDeAtaque { get { return cooldownDeAtaque; } }
     public Sprite SpriteEquipado { get {  return spriteEquipado; } }
     public float Knockback { get { return knockback; } }
@@ -11,7 +11,7 @@ public class ArmaBase : ItemBase
     [Header("Valores de Arma")]
 
     [SerializeField]
-    protected TipoDeDano tipoDeAtaque;
+    protected TipoDano tipoDeDano;
 
     [SerializeField]
     protected float dano;
@@ -28,10 +28,12 @@ public class ArmaBase : ItemBase
     [Tooltip("Animação da arma ao atacar.")]
     public AnimationClip animacaoDeAtaque;
 
-    public enum TipoDeDano
+    public enum TipoDano
     {
-        Melee,
-        Ranged,
-        Magico
+        None,
+        Fogo,
+        Gelo,
+        Terra,
+        Raio
     }
 }

@@ -15,6 +15,7 @@ public class InimigoBase : MonoBehaviour, IDamageable
             return aleatorio;
         }
     }
+    public TipoInimigo TipoDeInimigo { get { return tipoDeInimigo; } }
 
     [Header("Valores de Combate")]
 
@@ -22,6 +23,8 @@ public class InimigoBase : MonoBehaviour, IDamageable
     protected float dano = 15f;
     [SerializeField, Tooltip("Tempo de espera entre ataques em segundos.")]
     protected float cooldownDeAtaque = 1f;
+    [SerializeField]
+    protected TipoInimigo tipoDeInimigo;
 
     [Header("Valores de Vida")]
 
@@ -157,5 +160,14 @@ public class InimigoBase : MonoBehaviour, IDamageable
         {
             Handles.DrawWireDisc(transform.position, Vector3.forward, tamanhoAreaDeteccao);
         }
+    }
+
+    public enum TipoInimigo
+    {
+        None,
+        Fogo,
+        Gelo,
+        Terra,
+        Raio
     }
 }
